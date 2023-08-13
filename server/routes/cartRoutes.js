@@ -1,24 +1,24 @@
-const express = require('express')
-const {
+import { Router } from "express";
+import {
   dbCart,
   cartList,
   clearDbCart,
   applyCoupon,
   cancelCoupon,
   deleteUserDbCart,
-} = require('../controllers/cartControllers')
+} from "../controllers/cartControllers.js";
 
-const { protect } = require('../middleware/authMiddleware')
+import { protect } from "../middleware/authMiddleware.js";
 
-const router = express.Router()
+const router = Router();
 
 router
-  .route('/cart')
+  .route("/cart")
   .post(protect, dbCart)
   .get(protect, cartList)
-  .delete(protect, clearDbCart)
-router.route('/cart/coupon').post(protect, applyCoupon)
-router.route('/cart/coupon-cancel').post(protect, cancelCoupon)
-router.route('/cart/delete-user-cart').delete(protect, deleteUserDbCart)
+  .delete(protect, clearDbCart);
+router.route("/cart/coupon").post(protect, applyCoupon);
+router.route("/cart/coupon-cancel").post(protect, cancelCoupon);
+router.route("/cart/delete-user-cart").delete(protect, deleteUserDbCart);
 
-module.exports = router
+export default router;

@@ -1,6 +1,6 @@
-const mongoose = require('mongoose')
-const { ObjectId } = mongoose.Schema
-const productSchema = new mongoose.Schema(
+import mongoose from "mongoose";
+const { ObjectId } = mongoose.Schema;
+const productSchema = mongoose.Schema(
   {
     user: {
       type: String,
@@ -25,13 +25,13 @@ const productSchema = new mongoose.Schema(
     },
     category: {
       type: ObjectId,
-      ref: 'Category',
+      ref: "Category",
       required: true,
     },
     addon: [
       {
         type: ObjectId,
-        ref: 'Addon',
+        ref: "Addon",
       },
     ],
     sold: {
@@ -47,7 +47,7 @@ const productSchema = new mongoose.Schema(
     },
     delivery: {
       type: String,
-      enum: ['Yes', 'No'],
+      enum: ["Yes", "No"],
       required: true,
     },
     price: {
@@ -57,17 +57,19 @@ const productSchema = new mongoose.Schema(
     },
     variable: {
       type: ObjectId,
-      ref: 'Variable',
+      ref: "Variable",
       default: null,
     },
     availability: {
       type: String,
-      enum: ['Yes', 'No'],
+      enum: ["Yes", "No"],
       required: true,
     },
   },
   {
     timestamps: true,
   }
-)
-module.exports = mongoose.model('Product', productSchema)
+);
+const Product = mongoose.model("Product", productSchema);
+
+export default Product;

@@ -1,10 +1,10 @@
-const mongoose = require('mongoose')
-const AttributeSchema = new mongoose.Schema(
+import mongoose from "mongoose";
+const AttributeSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      minlength: [1, 'Too Short'],
-      maxlength: [32, 'Too Long'],
+      minlength: [1, "Too Short"],
+      maxlength: [32, "Too Long"],
       trim: true,
       require: true,
     },
@@ -17,11 +17,13 @@ const AttributeSchema = new mongoose.Schema(
       type: String,
       trim: true,
       require: true,
-      default: 'UnNamed',
+      default: "UnNamed",
     },
   },
   {
     timestamps: true,
   }
-)
-module.exports = mongoose.model('Attribute', AttributeSchema)
+);
+const Attribute = mongoose.model("Attribute", AttributeSchema);
+
+export default Attribute;

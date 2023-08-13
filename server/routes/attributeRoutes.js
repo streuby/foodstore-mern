@@ -1,23 +1,23 @@
-const express = require('express')
-const {
+import { Router } from "express";
+import {
   attributeCreate,
   attributeList,
   attributeById,
   attributeUpdate,
   attributeDelete,
-} = require('../controllers/attributeControllers')
-const { protect, adminCheck } = require('../middleware/authMiddleware')
+} from "../controllers/attributeControllers.js";
+import { protect, adminCheck } from "../middleware/authMiddleware.js";
 
-const router = express.Router()
+const router = Router();
 
 router
-  .route('/attribute')
+  .route("/attribute")
   .post(protect, adminCheck, attributeCreate)
-  .get(attributeList)
+  .get(attributeList);
 router
-  .route('/attribute/:id')
+  .route("/attribute/:id")
   .get(attributeById)
   .put(protect, adminCheck, attributeUpdate)
-  .delete(protect, adminCheck, attributeDelete)
+  .delete(protect, adminCheck, attributeDelete);
 
-module.exports = router
+export default router;

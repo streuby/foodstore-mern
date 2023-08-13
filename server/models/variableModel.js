@@ -1,6 +1,6 @@
-const mongoose = require('mongoose')
-const { ObjectId } = mongoose.Schema
-const variableSchema = new mongoose.Schema(
+import mongoose from "mongoose";
+const { ObjectId } = mongoose.Schema;
+const variableSchema = mongoose.Schema(
   {
     name: {
       type: String,
@@ -9,12 +9,14 @@ const variableSchema = new mongoose.Schema(
     attribute: [
       {
         type: ObjectId,
-        ref: 'Attribute',
+        ref: "Attribute",
       },
     ],
   },
   {
     timestamps: true,
   }
-)
-module.exports = mongoose.model('Variable', variableSchema)
+);
+const Variable = mongoose.model("Variable", variableSchema);
+
+export default Variable;

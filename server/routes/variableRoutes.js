@@ -1,24 +1,24 @@
-const express = require('express')
-const {
+import { Router } from "express";
+import {
   variableCreate,
   variableList,
   variableDelete,
   variableById,
   variableUpdate,
-} = require('../controllers/variableControllers')
+} from "../controllers/variableControllers.js";
 
-const { protect, adminCheck } = require('../middleware/authMiddleware')
+import { protect, adminCheck } from "../middleware/authMiddleware.js";
 
-const router = express.Router()
+const router = Router();
 
 router
-  .route('/variable')
+  .route("/variable")
   .post(protect, adminCheck, variableCreate)
-  .get(variableList)
+  .get(variableList);
 router
-  .route('/variable/:id')
+  .route("/variable/:id")
   .delete(protect, adminCheck, variableDelete)
   .get(variableById)
-  .put(protect, adminCheck, variableUpdate)
+  .put(protect, adminCheck, variableUpdate);
 
-module.exports = router
+export default router;

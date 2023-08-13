@@ -1,41 +1,45 @@
-const asyncHandler = require('express-async-handler')
-const Cart = require('../models/cartModels')
-const User = require('../models/userModel')
-const stripe = require('stripe')(process.env.STRIPE_SECRET)
+import asyncHandler from "express-async-handler";
+import Cart from "../models/cartModels.js";
+import User from "../models/userModel.js";
+import Stripe from "stripe";
+const stripe = Stripe(process.env.STRIPE_SECRET);
 
-exports.createPaymentIntent = asyncHandler(async (req, res) => {
+const { findOne } = Cart;
+const { findOne: _findOne } = User;
+
+export const createPaymentIntent = asyncHandler(async (req, res) => {
   // 1 find user
-  const user = await User.findOne({ email: req.user.email }).exec()
+  const user = await _findOne({ email: req.user.email }).exec();
   // 2 get user cart total
-  const { cartTotal, couponApplied, totalAfterDiscount } = await Cart.findOne({
+  const { cartTotal, couponApplied, totalAfterDiscount } = await findOne({
     orderdBy: user._id,
-  }).exec()
+  }).exec();
 
   if (couponApplied === false) {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: cartTotal * 100,
-      currency: 'usd',
-    })
+      currency: "usd",
+    });
     if (paymentIntent) {
       res.send({
         clientSecret: paymentIntent.client_secret,
-      })
+      });
     } else {
-      res.status(500)
-      throw new Error('Stripe error on getting client_Secret')
+      res.status(500);
+      throw new Error("Stripe error on getting client_Secret");
     }
   } else {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalAfterDiscount * 100,
-      currency: 'usd',
-    })
+      currency: "usd",
+    });
     if (paymentIntent) {
       res.send({
         clientSecret: paymentIntent.client_secret,
-      })
+      });
     } else {
-      res.status(500)
-      throw new Error('Stripe error on getting client_Secret')
+      res.status(500);
+      throw new Error("Stripe error on getting client_Secret");
     }
   }
-})
+});

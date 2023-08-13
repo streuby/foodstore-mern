@@ -1,10 +1,10 @@
-const mongoose = require('mongoose')
-const AddonSchema = new mongoose.Schema(
+import mongoose from "mongoose";
+const AddonSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      minlength: [3, 'Too Short'],
-      maxlength: [32, 'Too Long'],
+      minlength: [3, "Too Short"],
+      maxlength: [32, "Too Long"],
       trim: true,
       require: true,
     },
@@ -23,5 +23,7 @@ const AddonSchema = new mongoose.Schema(
   {
     timestamps: true,
   }
-)
-module.exports = mongoose.model('Addon', AddonSchema)
+);
+const Addon = mongoose.model("Addon", AddonSchema);
+
+export default Addon;

@@ -1,30 +1,34 @@
-const asyncHandler = require('express-async-handler')
-const admin = require('../firebase')
-const User = require('../models/userModel')
+import asyncHandler from "express-async-handler";
+import pkg from "firebase-admin";
+import User from "../models/userModel.js";
 
-exports.protect = asyncHandler(async (req, res, next) => {
+const { auth } = pkg;
+
+const { findOne } = User;
+
+export const protect = asyncHandler(async (req, res, next) => {
   if (
     req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
+    req.headers.authorization.startsWith("Bearer")
   ) {
     try {
-      const token = req.headers.authorization.split(' ')[1]
-      req.user = await admin.auth().verifyIdToken(token)
-      next()
+      const token = req.headers.authorization.split(" ")[1];
+      req.user = await auth().verifyIdToken(token);
+      next();
     } catch (error) {
-      res.status(401)
-      throw new Error('Not authorized, token failed')
+      res.status(401);
+      throw new Error("Not authorized, token failed");
     }
   }
-})
+});
 
-exports.adminCheck = asyncHandler(async (req, res, next) => {
-  const { email } = req.user
-  const adminEmail = await User.findOne({ email })
-  if (adminEmail.role !== 'admin') {
-    res.status(401)
-    throw new Error('Not authorized as an admin')
+export const adminCheck = asyncHandler(async (req, res, next) => {
+  const { email } = req.user;
+  const adminEmail = await findOne({ email });
+  if (adminEmail.role !== "admin") {
+    res.status(401);
+    throw new Error("Not authorized as an admin");
   } else {
-    next()
+    next();
   }
-})
+});

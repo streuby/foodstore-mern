@@ -1,20 +1,20 @@
-const express = require('express')
-const {
+import { Router } from "express";
+import {
   addonCreate,
   addonList,
   addonBySlug,
   addonUpdate,
   addonDelete,
-} = require('../controllers/addonControllers')
-const { protect, adminCheck } = require('../middleware/authMiddleware')
+} from "../controllers/addonControllers.js";
+import { protect, adminCheck } from "../middleware/authMiddleware.js";
 
-const router = express.Router()
+const router = Router();
 
-router.route('/addon').post(protect, adminCheck, addonCreate).get(addonList)
+router.route("/addon").post(protect, adminCheck, addonCreate).get(addonList);
 router
-  .route('/addon/:slug')
+  .route("/addon/:slug")
   .get(addonBySlug)
   .put(protect, adminCheck, addonUpdate)
-  .delete(protect, adminCheck, addonDelete)
+  .delete(protect, adminCheck, addonDelete);
 
-module.exports = router
+export default router;

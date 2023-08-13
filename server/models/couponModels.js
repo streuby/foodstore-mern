@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const CouponSchema = new mongoose.Schema(
+import mongoose from "mongoose";
+const CouponSchema = mongoose.Schema(
   {
     name: {
       type: String,
@@ -7,8 +7,8 @@ const CouponSchema = new mongoose.Schema(
       unique: true,
       uppercase: true,
       required: true,
-      minlength: [6, 'Too short'],
-      maxlength: [12, 'Too long'],
+      minlength: [6, "Too short"],
+      maxlength: [12, "Too long"],
     },
     expiry: {
       type: Date,
@@ -22,5 +22,7 @@ const CouponSchema = new mongoose.Schema(
   {
     timestamps: true,
   }
-)
-module.exports = mongoose.model('Coupon', CouponSchema)
+);
+const Coupon = mongoose.model("Coupon", CouponSchema);
+
+export default Coupon;

@@ -1,27 +1,27 @@
-const express = require('express')
-const {
+import { Router } from "express";
+import {
   userList,
   saveShippingAddress,
   userDetails,
   addToWishlist,
   removeFromWishlist,
   wishlistData,
-} = require('../controllers/userControllers')
-const { protect, adminCheck } = require('../middleware/authMiddleware')
+} from "../controllers/userControllers.js";
+import { protect, adminCheck } from "../middleware/authMiddleware.js";
 
-const router = express.Router()
+const router = Router();
 
 router
-  .route('/users')
+  .route("/users")
   .get(protect, adminCheck, userList)
-  .post(protect, saveShippingAddress)
-router.route('/admin/usersDetails/:id').get(protect, adminCheck, userDetails)
+  .post(protect, saveShippingAddress);
+router.route("/admin/usersDetails/:id").get(protect, adminCheck, userDetails);
 
-router.route('/wishlist').get(protect, wishlistData)
+router.route("/wishlist").get(protect, wishlistData);
 
 router
-  .route('/wishlist/:id')
+  .route("/wishlist/:id")
   .post(protect, addToWishlist)
-  .put(protect, removeFromWishlist)
+  .put(protect, removeFromWishlist);
 
-module.exports = router
+export default router;

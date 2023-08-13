@@ -1,6 +1,6 @@
-const mongoose = require('mongoose')
-const { ObjectId } = mongoose.Schema
-const userSchema = new mongoose.Schema(
+import mongoose from "mongoose";
+const { ObjectId } = mongoose.Schema;
+const userSchema = mongoose.Schema(
   {
     name: {
       type: String,
@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: 'customer',
+      default: "customer",
     },
     cart: {
       type: Array,
@@ -25,10 +25,12 @@ const userSchema = new mongoose.Schema(
       country: String,
       postcode: String,
     },
-    wishlist: [{ type: ObjectId, ref: 'Product' }],
+    wishlist: [{ type: ObjectId, ref: "Product" }],
   },
   {
     timestamps: true,
   }
-)
-module.exports = mongoose.model('User', userSchema)
+);
+const User = mongoose.model("User", userSchema);
+
+export default User;
