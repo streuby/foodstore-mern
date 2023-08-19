@@ -1,4 +1,4 @@
-import serviceAccount from "../config/fbServiceAccountKey.json" assert { type: "json" };
+import serviceAccount from "../config/serviceAccountKey.json" assert { type: "json" };
 
 import admin from "firebase-admin";
 
