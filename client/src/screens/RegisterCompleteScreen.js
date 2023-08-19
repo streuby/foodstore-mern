@@ -34,7 +34,7 @@ const RegisterCompleteScreen = () => {
     e.preventDefault();
 
     if (password === confirmPassword) {
-      if (password.length >= 6) {
+      if (password.length >= 8) {
         try {
           setMessage("");
           const result = await auth.signInWithEmailLink(
@@ -52,13 +52,13 @@ const RegisterCompleteScreen = () => {
               displayName: name,
             });
             await auth.signOut();
-            location("/login");
+            navigate("/login");
           }
         } catch (error) {
           setMessage(error.message);
         }
       } else {
-        setMessage("password must be 6 digit long");
+        setMessage("password must be at least 8 digit long");
       }
     } else {
       setMessage("Password Doesn't match");

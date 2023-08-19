@@ -1,10 +1,15 @@
 import asyncHandler from "express-async-handler";
 import pkg from "firebase-admin";
 import User from "../models/userModel.js";
+import { admin, serviceAccount } from "../firebase/index.js";
 
 const { auth } = pkg;
 
 const { findOne } = User;
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 
 export const protect = asyncHandler(async (req, res, next) => {
   if (
@@ -13,7 +18,9 @@ export const protect = asyncHandler(async (req, res, next) => {
   ) {
     try {
       const token = req.headers.authorization.split(" ")[1];
+
       req.user = await auth().verifyIdToken(token);
+      console.log("Authentication approved >>>>>");
       next();
     } catch (error) {
       res.status(401);
@@ -29,6 +36,7 @@ export const adminCheck = asyncHandler(async (req, res, next) => {
     res.status(401);
     throw new Error("Not authorized as an admin");
   } else {
+    console.log("Admin authentication approved >>>>>");
     next();
   }
 });

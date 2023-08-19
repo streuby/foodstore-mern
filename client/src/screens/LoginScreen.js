@@ -36,7 +36,7 @@ const LoginScreen = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    if (password.length >= 6) {
+    if (password.length >= 8) {
       try {
         const { user } = await auth.signInWithEmailAndPassword(
           userEmail,
@@ -54,7 +54,7 @@ const LoginScreen = () => {
         setMessage(error.message);
       }
     } else {
-      setMessage("password must be 6 digit long");
+      setMessage("password must be 8 digit long");
     }
   };
 

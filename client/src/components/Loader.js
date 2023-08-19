@@ -1,19 +1,19 @@
-import React from 'react'
-import { Spinner } from 'react-bootstrap'
+import React from "react";
+import { Spinner } from "react-bootstrap";
 const Loader = ({ size }) => {
   return (
     <>
       <Spinner
-        animation='grow'
-        variant='dark'
+        animation="grow"
+        variant="dark"
         // style={{ height: '100px', width: '100px' }}
         className={size}
       />
     </>
-  )
-}
+  );
+};
 Loader.defaultProps = {
-  size: 'size-md',
-}
+  size: "size-md",
+};
 
-export default Loader
+export default Loader;
