@@ -1,17 +1,17 @@
 import asyncHandler from "express-async-handler";
 import Product from "../models/productModel.js";
 import slugify from "slugify";
-import cloudinary from "../config/cloudinary.js";
+//import cloudinary from "../config/cloudinary.js";
 
 const { findOne, create, find, findById } = Product;
 
 export const uploadImage = asyncHandler(async (req, res) => {
-  const result = await cloudinary.v2.uploader.upload(req.body.image, {
-    upload_preset: "foodstore",
-    use_filename: true,
-    public_id: `${Date.now()}`,
-    resource_type: "auto", // jpeg, png
-  });
+  const result = {}; //await cloudinary.v2.uploader.upload(req.body.image, {
+  //   upload_preset: "foodstore",
+  //   use_filename: true,
+  //   public_id: `${Date.now()}`,
+  //   resource_type: "auto", // jpeg, png
+  // });
   if (result) {
     res.json({
       public_id: result.public_id,
