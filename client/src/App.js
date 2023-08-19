@@ -109,78 +109,100 @@ function App() {
         <main className="py-3">
           <Container>
             <Routes>
-              <Route path="/" element={HomeScreen} exact />
-              <Route path="/register" element={RegisterScreen} exact />
-              <Route path="/login" element={LoginScreen} />
-              <Route path="/forgot/password" element={ForgetPasswordScreen} />
+              <Route path="/" element={<HomeScreen />} exact />
+              <Route path="/register" element={<RegisterScreen />} exact />
+              <Route path="/login" element={<LoginScreen />} />
+              <Route
+                path="/forgot/password"
+                element={<ForgetPasswordScreen />}
+              />
               <Route
                 path="/register/complete"
-                element={RegisterCompleteScreen}
+                element={<RegisterCompleteScreen />}
               />
               <Route
                 path="/user/orderhistory"
-                element={OrderHistoryScreen}
+                element={<OrderHistoryScreen />}
                 exact
               />
-              <Route path="/user/wishlist" element={WishlistScreen} exact />
-              <Route path="/user/password" element={PasswordScreen} exact />
-              <Route path="/admin/userlist" element={UserListScreen} exact />
-              <Route path="/admin/category" element={CategoryScreen} exact />
+              <Route path="/user/wishlist" element={<WishlistScreen />} exact />
+              <Route path="/user/password" element={<PasswordScreen />} exact />
+              <Route
+                path="/admin/userlist"
+                element={<UserListScreen />}
+                exact
+              />
+              <Route
+                path="/admin/category"
+                element={<CategoryScreen />}
+                exact
+              />
               <Route
                 path="/admin/category/:slug/edit"
-                element={CategoryEditScreen}
+                element={<CategoryEditScreen />}
                 exact
               />
               <Route
                 path="/category/:slug"
-                element={CategoryArchiveScreen}
+                element={<CategoryArchiveScreen />}
                 exact
               />
-              <Route path="/admin/addon" element={AddonScreen} exact />
+              <Route path="/admin/addon" element={<AddonScreen />} exact />
               <Route
                 path="/admin/addon/:slug/edit"
-                element={AddonEditScreen}
+                element={<AddonEditScreen />}
                 exact
               />
-              <Route path="/admin/products" element={ProductListScreen} exact />
+              <Route
+                path="/admin/products"
+                element={<ProductListScreen />}
+                exact
+              />
               <Route
                 path="/admin/product/create"
-                element={ProductCreateScreen}
+                element={<ProductCreateScreen />}
                 exact
               />
               <Route
                 path="/admin/product/:slug/edit"
-                element={ProductEditScreen}
+                element={<ProductEditScreen />}
                 exact
               />
-              <Route path="/admin/attribute" element={AttributeScreen} exact />
+              <Route
+                path="/admin/attribute"
+                element={<AttributeScreen />}
+                exact
+              />
               <Route
                 path="/admin/attribute/:id/edit"
-                element={AttributeEditScreen}
+                element={<AttributeEditScreen />}
                 exact
               />
               <Route
                 path="/admin/variables"
-                element={VariableCreateScreen}
+                element={<VariableCreateScreen />}
                 exact
               />
               <Route
                 path="/admin/variable/:id/edit"
-                element={VariableEditScreen}
+                element={<VariableEditScreen />}
                 exact
               />
-              <Route path="/admin/coupon" element={CouponScreen} />
-              <Route path="/admin/manageorder" element={ManageOrderScreen} />
+              <Route path="/admin/coupon" element={<CouponScreen />} />
+              <Route
+                path="/admin/manageorder"
+                element={<ManageOrderScreen />}
+              />
               <Route
                 path="/product/:slug"
-                element={SingleProductScreen}
+                element={<SingleProductScreen />}
                 exact
               />
-              <Route path="/cart" element={CartScreen} />
-              <Route path="/checkout" element={CheckoutScreen} />
-              <Route path="/placeorder" element={PlaceOrderScreen} />
-              <Route path="/order/:id" element={OrderDetailsScreen} />
-              <Route path="/admin/user/:id" element={UserDetailsScreen} />
+              <Route path="/cart" element={<CartScreen />} />
+              <Route path="/checkout" element={<CheckoutScreen />} />
+              <Route path="/placeorder" element={<PlaceOrderScreen />} />
+              <Route path="/order/:id" element={<OrderDetailsScreen />} />
+              <Route path="/admin/user/:id" element={<UserDetailsScreen />} />
             </Routes>
           </Container>
         </main>

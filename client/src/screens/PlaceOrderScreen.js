@@ -1,33 +1,35 @@
-import React, { useEffect } from 'react'
-import { Elements } from '@stripe/react-stripe-js'
-import { loadStripe } from '@stripe/stripe-js'
-import StripeCheckoutForm from '../components/form/StripeCheckoutForm'
-import { useSelector } from 'react-redux'
-import Meta from '../components/Meta'
+import React, { useEffect } from "react";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import StripeCheckoutForm from "../components/form/StripeCheckoutForm";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import Meta from "../components/Meta";
 
-const promise = loadStripe(process.env.REACT_APP_PUBLISHABLE_KEY)
-const PlaceOrderScreen = ({ history }) => {
-  const userLogIn = useSelector((state) => state.userLogIn)
-  const { userInfo } = userLogIn
+const promise = loadStripe(process.env.REACT_APP_PUBLISHABLE_KEY);
+const PlaceOrderScreen = () => {
+  const navigate = useNavigate();
+  const userLogIn = useSelector((state) => state.userLogIn);
+  const { userInfo } = userLogIn;
 
-  const cartList = useSelector((state) => state.cartList)
-  const { cartItems } = cartList
+  const cartList = useSelector((state) => state.cartList);
+  const { cartItems } = cartList;
 
   useEffect(() => {
     if (!userInfo) {
-      history.push('/login')
+      navigate("/login");
     }
     if (cartItems === null) {
-      history.push('/login')
+      navigate("/login");
     }
-  }, [history, userInfo, cartItems])
+  }, [userInfo, cartItems, navigate]);
 
   return (
     <Elements stripe={promise}>
-      <Meta title='Food Store | Place Order' />
+      <Meta title="Food Store | Place Order" />
       <StripeCheckoutForm userInfo={userInfo} cartItems={cartItems} />
     </Elements>
-  )
-}
+  );
+};
 
-export default PlaceOrderScreen
+export default PlaceOrderScreen;

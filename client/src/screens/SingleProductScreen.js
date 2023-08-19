@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { MultiSelect } from "react-multi-select-component";
 import { detailsProduct } from "../actions/productActions";
 import { Image, Row, Col, ListGroup, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
 import Message from "../components/Message";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,13 +20,15 @@ import { ADD_TO_WISHLIST_RESET } from "../constants/userConstants";
 import Loader from "../components/Loader";
 import Meta from "../components/Meta";
 
-const SingleProductScreen = ({ match, history }) => {
+const SingleProductScreen = ({ match }) => {
   const productSlug = match.params.slug;
   const alert = useAlert();
   const [counter, setCounter] = useState(1);
   const [variable, setVariable] = useState("");
   const [addon, setAddon] = useState([]);
+
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const userLogIn = useSelector((state) => state.userLogIn);
   const { userInfo } = userLogIn;
@@ -61,7 +63,7 @@ const SingleProductScreen = ({ match, history }) => {
         addon.length < 1 ? null : addon.map((adn) => adn.value)
       )
     );
-    history.push("/cart");
+    navigate("/cart");
   };
   return (
     <div

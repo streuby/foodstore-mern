@@ -1,28 +1,30 @@
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { listOrderAdmin } from '../../actions/orderActions'
-import { Col, Row } from 'react-bootstrap'
-import Loader from '../../components/Loader'
-import Message from '../../components/Message'
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { listOrderAdmin } from "../../actions/orderActions";
+import { Col, Row } from "react-bootstrap";
+import Loader from "../../components/Loader";
+import Message from "../../components/Message";
 
-import OrderListTable from '../../components/OrderListTable'
+import OrderListTable from "../../components/OrderListTable";
+import { useNavigate } from "react-router-dom";
 
-const ManageOrderScreen = ({ history }) => {
-  const dispatch = useDispatch()
+const ManageOrderScreen = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const userLogIn = useSelector((state) => state.userLogIn)
-  const { userInfo } = userLogIn
+  const userLogIn = useSelector((state) => state.userLogIn);
+  const { userInfo } = userLogIn;
 
-  const adminOrderList = useSelector((state) => state.adminOrderList)
-  const { orderList, loading, error } = adminOrderList
+  const adminOrderList = useSelector((state) => state.adminOrderList);
+  const { orderList, loading, error } = adminOrderList;
 
   useEffect(() => {
-    if (userInfo && userInfo.role === 'admin') {
-      dispatch(listOrderAdmin())
+    if (userInfo && userInfo.role === "admin") {
+      dispatch(listOrderAdmin());
     } else {
-      history.push('/login')
+      navigate("/login");
     }
-  }, [history, userInfo, dispatch])
+  }, [userInfo, dispatch, navigate]);
   return (
     <>
       <Row>
@@ -31,14 +33,14 @@ const ManageOrderScreen = ({ history }) => {
           {loading ? (
             <Loader />
           ) : error ? (
-            <Message variant='danger'>{error}</Message>
+            <Message variant="danger">{error}</Message>
           ) : (
             <OrderListTable orderList={orderList} />
           )}
         </Col>
       </Row>
     </>
-  )
-}
+  );
+};
 
-export default ManageOrderScreen
+export default ManageOrderScreen;

@@ -1,34 +1,36 @@
-import React, { useEffect } from 'react'
-import { Col, Row } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
+import React, { useEffect } from "react";
+import { Col, Row } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-import { listOrderUser } from '../../actions/orderActions'
-import ShippingForm from '../../components/form/ShippingForm'
-import Loader from '../../components/Loader'
-import Message from '../../components/Message'
-import Meta from '../../components/Meta'
-import OrderListTable from '../../components/OrderListTable'
+import { listOrderUser } from "../../actions/orderActions";
+import ShippingForm from "../../components/form/ShippingForm";
+import Loader from "../../components/Loader";
+import Message from "../../components/Message";
+import Meta from "../../components/Meta";
+import OrderListTable from "../../components/OrderListTable";
 
-const OrderHistoryScreen = ({ history }) => {
-  const dispatch = useDispatch()
+const OrderHistoryScreen = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const userLogIn = useSelector((state) => state.userLogIn)
-  const { userInfo } = userLogIn
+  const userLogIn = useSelector((state) => state.userLogIn);
+  const { userInfo } = userLogIn;
 
-  const userOrderList = useSelector((state) => state.userOrderList)
-  const { orderList, loading, error } = userOrderList
+  const userOrderList = useSelector((state) => state.userOrderList);
+  const { orderList, loading, error } = userOrderList;
 
   useEffect(() => {
     if (!userInfo) {
-      history.push('/login')
+      navigate("/login");
     } else {
-      dispatch(listOrderUser())
+      dispatch(listOrderUser());
     }
-  }, [history, userInfo, dispatch])
+  }, [userInfo, dispatch, navigate]);
 
   return (
     <>
-      <Meta title='Food Store | Order History' />
+      <Meta title="Food Store | Order History" />
       <Row>
         <Col md={2}>
           <ShippingForm />
@@ -38,14 +40,14 @@ const OrderHistoryScreen = ({ history }) => {
           {loading ? (
             <Loader />
           ) : error ? (
-            <Message variant='danger'>{error}</Message>
+            <Message variant="danger">{error}</Message>
           ) : (
             <OrderListTable orderList={orderList} />
           )}
         </Col>
       </Row>
     </>
-  )
-}
+  );
+};
 
-export default OrderHistoryScreen
+export default OrderHistoryScreen;

@@ -4,7 +4,7 @@ import React, { Component } from "react";
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: null, errorInfo: null };
   }
 
   static getDerivedStateFromError(error) {
@@ -13,24 +13,29 @@ class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // You can also log the error to an error tracking service here
+    // Log the error
     console.error("Error caught by boundary:", error, errorInfo);
-    // Custom error handling logic
-    if (error instanceof TypeError) {
-      console.error("A TypeError occurred:", error);
-      // Perform actions specific to handling TypeError
-    } else if (error instanceof ReferenceError) {
-      console.error("A ReferenceError occurred:", error);
-      // Perform actions specific to handling ReferenceError
-    } else {
-      // Handle other types of errors
-      console.error("An error occurred:", error);
-    }
+
+    // You can access the component stack trace from errorInfo.componentStack
+    console.error("Component stack trace:", errorInfo.componentStack);
+
+    // Set the error and errorInfo in the state for rendering
+    this.setState({ error, errorInfo });
   }
 
   render() {
     if (this.state.hasError) {
-      return <div>Something went wrong. Please try again later.</div>;
+      // Render an error UI or message
+      return (
+        <div>
+          <h2>Something went wrong in this component:</h2>
+          <p>{this.state.error && this.state.error.toString()}</p>
+          <p>Component Stack Trace:</p>
+          <pre>
+            {this.state.errorInfo && this.state.errorInfo.componentStack}
+          </pre>
+        </div>
+      );
     }
 
     return this.props.children;

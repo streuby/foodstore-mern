@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "16.16.0",
-    "npm": "8.11.0"
+    "node": "v18.16.1",
+    "npm": "9.7.2"
   },
   "dependencies": {
     "@david.kucsai/react-pdf-table": "^0.3.0",
@@ -76,6 +76,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "env-cmd": "^10.1.0",
+    "react-error-overlay": "^6.0.9",
     "web-vitals": "^3.1.0"
   },
   "resolutions": {

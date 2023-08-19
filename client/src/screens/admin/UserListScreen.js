@@ -1,31 +1,33 @@
-import React, { useEffect } from 'react'
-import { Button, Col, Row, Table } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
+import React, { useEffect } from "react";
+import { Button, Col, Row, Table } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 
-import { listUsers } from '../../actions/userActions'
-import Loader from '../../components/Loader'
-import Message from '../../components/Message'
+import { listUsers } from "../../actions/userActions";
+import Loader from "../../components/Loader";
+import Message from "../../components/Message";
+import { useNavigate } from "react-router-dom";
 
-const UserListScreen = ({ history }) => {
-  const userLogIn = useSelector((state) => state.userLogIn)
-  const { userInfo } = userLogIn
+const UserListScreen = () => {
+  const userLogIn = useSelector((state) => state.userLogIn);
+  const { userInfo } = userLogIn;
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (userInfo && userInfo.role !== 'admin') {
-      history.push('/')
+    if (userInfo && userInfo.role !== "admin") {
+      navigate("/");
     } else {
-      dispatch(listUsers())
+      dispatch(listUsers());
     }
-  }, [dispatch, userInfo, history])
+  }, [dispatch, userInfo, navigate]);
 
-  const userList = useSelector((state) => state.userList)
-  const { loading: loadingUserList, users, error: errorUserList } = userList
+  const userList = useSelector((state) => state.userList);
+  const { loading: loadingUserList, users, error: errorUserList } = userList;
   return loadingUserList ? (
     <Loader />
   ) : errorUserList ? (
-    <Message variant='danger'>{errorUserList}</Message>
+    <Message variant="danger">{errorUserList}</Message>
   ) : (
     <Row>
       <Col>
@@ -34,8 +36,8 @@ const UserListScreen = ({ history }) => {
           bordered
           hover
           responsive
-          className='table-sm'
-          variant='dark'
+          className="table-sm"
+          variant="dark"
         >
           <thead>
             <tr>
@@ -59,8 +61,8 @@ const UserListScreen = ({ history }) => {
                 <td></td>
                 <td>
                   <Button
-                    variant='dark'
-                    onClick={() => history.push(`/admin/user/${user._id}`)}
+                    variant="dark"
+                    onClick={() => navigate(`/admin/user/${user._id}`)}
                   >
                     Details
                   </Button>
@@ -71,7 +73,7 @@ const UserListScreen = ({ history }) => {
         </Table>
       </Col>
     </Row>
-  )
-}
+  );
+};
 
-export default UserListScreen
+export default UserListScreen;

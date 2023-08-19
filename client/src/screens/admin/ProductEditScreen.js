@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Row, Col } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "../../components/Message";
 import Loader from "../../components/Loader";
@@ -18,7 +18,7 @@ import {
 import { listVariable } from "../../actions/variableActions";
 import { MultiSelect } from "react-multi-select-component";
 
-const ProductEditScreen = ({ history, match }) => {
+const ProductEditScreen = ({ match }) => {
   const productSlug = match.params.slug;
   const alert = useAlert();
   const [title, setTitle] = useState("");
@@ -31,7 +31,9 @@ const ProductEditScreen = ({ history, match }) => {
   const [description, setDescription] = useState("");
   const [delivery, setDelivery] = useState("");
   const [availability, setAvailability] = useState("");
+
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   //check logged in user
   const userLogIn = useSelector((state) => state.userLogIn);
   const { userInfo } = userLogIn;
@@ -64,7 +66,7 @@ const ProductEditScreen = ({ history, match }) => {
         dispatch({ type: UPDATE_PRODUCT_RESET });
         dispatch({ type: DETAILS_PRODUCT_RESET });
         dispatch({ type: UPLOAD_IMAGE_RESET });
-        history.push("/admin/products");
+        navigate("/admin/products");
       } else {
         if (!product.title || product.slug !== productSlug) {
           dispatch(detailsProduct(productSlug));
@@ -94,10 +96,9 @@ const ProductEditScreen = ({ history, match }) => {
         }
       }
     } else {
-      history.push("/");
+      navigate("/");
     }
   }, [
-    history,
     dispatch,
     productSlug,
     product,
@@ -105,6 +106,7 @@ const ProductEditScreen = ({ history, match }) => {
     categories,
     alert,
     userInfo,
+    navigate,
   ]);
 
   const submitHandler = (e) => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import FormContainer from "../../components/FormContainer";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import Loader from "../../components/Loader";
 import Message from "../../components/Message";
@@ -14,12 +14,13 @@ import {
 import { listAttribute } from "../../actions/attributeActions";
 import { MultiSelect } from "react-multi-select-component";
 
-const VariableEditScreen = ({ history, match }) => {
+const VariableEditScreen = ({ match }) => {
   const alert = useAlert();
   const variableId = match.params.id;
   const [label, setLabel] = useState("");
   const [selectedAttribute, setSelectedAttribute] = useState([]);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   //check logged in user
   const userLogIn = useSelector((state) => state.userLogIn);
@@ -41,16 +42,16 @@ const VariableEditScreen = ({ history, match }) => {
 
   useEffect(() => {
     if (userInfo && userInfo.role !== "admin") {
-      history.push("/");
+      navigate("/");
     }
-  }, [userInfo, history]);
+  }, [userInfo, navigate]);
 
   useEffect(() => {
     if (successUpdate) {
       alert.success("Variable Updated");
       dispatch({ type: VARIABLE_UPDATE_RESET });
       dispatch({ type: VARIABLE_DETAILS_RESET });
-      history.push("/admin/variables");
+      navigate("/admin/variables");
     } else {
       if (!variableData.name || variableData._id !== variableId) {
         dispatch(detailsVariable(variableId));
@@ -67,7 +68,7 @@ const VariableEditScreen = ({ history, match }) => {
         }
       }
     }
-  }, [dispatch, history, variableId, variableData, successUpdate, alert]);
+  }, [dispatch, variableId, variableData, successUpdate, alert, navigate]);
 
   const submitHandler = (e) => {
     e.preventDefault();

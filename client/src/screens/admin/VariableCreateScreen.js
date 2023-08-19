@@ -15,12 +15,14 @@ import {
 } from "../../actions/variableActions";
 import ItemSearch from "../../components/ItemSearch";
 import { MultiSelect } from "react-multi-select-component";
+import { useNavigate } from "react-router-dom";
 
-const VariableCreateScreen = ({ history }) => {
+const VariableCreateScreen = () => {
   const [label, setLabel] = useState("");
   const [selectedAttribute, setSelectedAttribute] = useState([]);
   const [keyword, setKeyword] = useState("");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   //check logged in user
   const userLogIn = useSelector((state) => state.userLogIn);
   const { userInfo } = userLogIn;
@@ -51,9 +53,9 @@ const VariableCreateScreen = ({ history }) => {
 
   useEffect(() => {
     if (userInfo && userInfo.role !== "admin") {
-      history.push("/");
+      navigate("/");
     }
-  }, [userInfo, history]);
+  }, [userInfo, navigate]);
 
   useEffect(() => {
     dispatch(listAttribute());

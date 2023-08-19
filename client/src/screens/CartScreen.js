@@ -1,56 +1,57 @@
-import React, { useEffect } from 'react'
-import { faMinus, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Image, Row, Col, ListGroup, Button, Card } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
-import { addToCart, removeFromCart, dbSaveCart } from '../actions/cartActions'
-import Message from '../components/Message'
-import { CART_CLEAR_ITEM, CART_DB_RESET } from '../constants/cartConstants'
-import Meta from '../components/Meta'
-const CartScreen = ({ history }) => {
-  const dispatch = useDispatch()
+import React, { useEffect } from "react";
+import { faMinus, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Image, Row, Col, ListGroup, Button, Card } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { addToCart, removeFromCart, dbSaveCart } from "../actions/cartActions";
+import Message from "../components/Message";
+import { CART_CLEAR_ITEM, CART_DB_RESET } from "../constants/cartConstants";
+import Meta from "../components/Meta";
+const CartScreen = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const cart = useSelector((state) => state.cart)
-  const { cartItems } = cart
+  const cart = useSelector((state) => state.cart);
+  const { cartItems } = cart;
 
-  const userLogIn = useSelector((state) => state.userLogIn)
-  const { userInfo } = userLogIn
+  const userLogIn = useSelector((state) => state.userLogIn);
+  const { userInfo } = userLogIn;
 
-  const cartSaveDb = useSelector((state) => state.cartSaveDb)
-  const { success } = cartSaveDb
+  const cartSaveDb = useSelector((state) => state.cartSaveDb);
+  const { success } = cartSaveDb;
 
   useEffect(() => {
-    dispatch(addToCart())
+    dispatch(addToCart());
     if (success) {
-      history.push('/checkout')
-      dispatch({ type: CART_DB_RESET })
-      localStorage.removeItem('cartItems')
-      dispatch({ type: CART_CLEAR_ITEM })
+      navigate("/checkout");
+      dispatch({ type: CART_DB_RESET });
+      localStorage.removeItem("cartItems");
+      dispatch({ type: CART_CLEAR_ITEM });
     }
-  }, [dispatch, history, success])
+  }, [dispatch, navigate, success]);
 
   const removeItemHandler = (slug) => {
-    dispatch(removeFromCart(slug))
-  }
+    dispatch(removeFromCart(slug));
+  };
   const checkOutHandler = () => {
-    dispatch(dbSaveCart(cartItems))
-  }
+    dispatch(dbSaveCart(cartItems));
+  };
   return (
     <>
-      <Meta title='Food Store | Cart' />
+      <Meta title="Food Store | Cart" />
       <Row>
         <Col md={9}>
           {cartItems.length === 0 ? (
-            <Message variant={'info'}>
-              Your cart is empty! <Link to='/'>Go Back</Link>
+            <Message variant={"info"}>
+              Your cart is empty! <Link to="/">Go Back</Link>
             </Message>
           ) : (
-            <ListGroup variant='flush'>
+            <ListGroup variant="flush">
               {cartItems.map((item) => (
                 <ListGroup.Item
                   key={item.product}
-                  style={{ backgroundColor: '#dfe6e9' }}
+                  style={{ backgroundColor: "#dfe6e9" }}
                 >
                   <Row>
                     <Col md={2}>
@@ -60,9 +61,9 @@ const CartScreen = ({ history }) => {
                       <Link
                         to={`/product/${item.slug}`}
                         style={{
-                          color: '#000',
-                          fontSize: '18px',
-                          fontWeight: '600',
+                          color: "#000",
+                          fontSize: "18px",
+                          fontWeight: "600",
                         }}
                       >
                         {item.title}
@@ -70,16 +71,16 @@ const CartScreen = ({ history }) => {
                       {item.variableData && (
                         <p
                           style={{
-                            backgroundColor: '#b2bec3',
-                            padding: '5px 5px 7px',
-                            margin: '0px',
-                            borderRadius: '10px',
-                            color: '#000',
-                            fontSize: '14px',
-                            marginBottom: '3px',
+                            backgroundColor: "#b2bec3",
+                            padding: "5px 5px 7px",
+                            margin: "0px",
+                            borderRadius: "10px",
+                            color: "#000",
+                            fontSize: "14px",
+                            marginBottom: "3px",
                           }}
                         >
-                          <span style={{ fontWeight: '500' }}>Type:</span>{' '}
+                          <span style={{ fontWeight: "500" }}>Type:</span>{" "}
                           {item.variableData.name}
                         </p>
                       )}
@@ -87,22 +88,22 @@ const CartScreen = ({ history }) => {
                       {item.addonData && (
                         <div
                           style={{
-                            backgroundColor: '#b2bec3',
-                            padding: '5px 5px',
-                            margin: '0px',
-                            borderRadius: '10px',
+                            backgroundColor: "#b2bec3",
+                            padding: "5px 5px",
+                            margin: "0px",
+                            borderRadius: "10px",
                           }}
                         >
                           <div>
-                            <span style={{ fontWeight: '500' }}>Addon:</span>
+                            <span style={{ fontWeight: "500" }}>Addon:</span>
                           </div>
                           <div>
                             {item.addonData.map((adn) => (
                               <p
                                 style={{
-                                  color: '#000',
-                                  fontSize: '13px',
-                                  margin: '0px',
+                                  color: "#000",
+                                  fontSize: "13px",
+                                  margin: "0px",
                                 }}
                                 key={adn._id}
                               >
@@ -110,13 +111,13 @@ const CartScreen = ({ history }) => {
                               </p>
                             ))}
                           </div>
-                          <hr style={{ margin: '0' }} />
+                          <hr style={{ margin: "0" }} />
                           <div>
                             <p
                               style={{
-                                color: '#000',
-                                fontSize: '13px',
-                                margin: '0px',
+                                color: "#000",
+                                fontSize: "13px",
+                                margin: "0px",
                               }}
                             >
                               Total Addon Price: ${item.addonPrice * item.qty}
@@ -126,11 +127,11 @@ const CartScreen = ({ history }) => {
                       )}
                     </Col>
                     <Col md={2}>
-                      <p style={{ fontWeight: '600' }}>
+                      <p style={{ fontWeight: "600" }}>
                         ${item.price * item.qty}
                       </p>
                     </Col>
-                    <Col md={3} className='d-flex flex-row align-items-start'>
+                    <Col md={3} className="d-flex flex-row align-items-start">
                       <Button
                         onClick={() =>
                           dispatch(
@@ -150,10 +151,10 @@ const CartScreen = ({ history }) => {
                       </Button>
                       <span
                         style={{
-                          padding: '7px 15px',
-                          backgroundColor: '#fdcb6e',
-                          fontWeight: '600',
-                          fontSize: '15px',
+                          padding: "7px 15px",
+                          backgroundColor: "#fdcb6e",
+                          fontWeight: "600",
+                          fontSize: "15px",
                         }}
                       >
                         {item.qty && item.qty}
@@ -178,10 +179,10 @@ const CartScreen = ({ history }) => {
                     </Col>
                     <Col md={1}>
                       <Button
-                        type='button'
-                        variant='dark'
+                        type="button"
+                        variant="dark"
                         onClick={() => {
-                          removeItemHandler(item.slug)
+                          removeItemHandler(item.slug);
                         }}
                       >
                         <FontAwesomeIcon icon={faTrash} />
@@ -194,14 +195,14 @@ const CartScreen = ({ history }) => {
           )}
         </Col>
         <Col md={3}>
-          <Card style={{ backgroundColor: '#DFE6E9' }}>
-            <ListGroup variant='flush'>
+          <Card style={{ backgroundColor: "#DFE6E9" }}>
+            <ListGroup variant="flush">
               <ListGroup.Item>
                 Total: ({cartItems.reduce((acc, item) => acc + item.qty, 0)})
                 Items
               </ListGroup.Item>
               <ListGroup.Item>
-                Total Addon Price (${' '}
+                Total Addon Price (${" "}
                 {cartItems.reduce(
                   (acc, item) => acc + item.addonPriceWithQty,
                   0
@@ -209,7 +210,7 @@ const CartScreen = ({ history }) => {
                 )
               </ListGroup.Item>
               <ListGroup.Item>
-                Total (${' '}
+                Total (${" "}
                 {cartItems.reduce(
                   (acc, item) => acc + item.qty * item.price,
                   0
@@ -219,8 +220,8 @@ const CartScreen = ({ history }) => {
               <ListGroup.Item>
                 {userInfo ? (
                   <Button
-                    variant='success'
-                    style={{ width: '-webkit-fill-available' }}
+                    variant="success"
+                    style={{ width: "-webkit-fill-available" }}
                     onClick={checkOutHandler}
                     disabled={!cartItems.length}
                   >
@@ -228,16 +229,16 @@ const CartScreen = ({ history }) => {
                   </Button>
                 ) : (
                   <Button
-                    style={{ width: '-webkit-fill-available' }}
+                    style={{ width: "-webkit-fill-available" }}
                     disabled={!cartItems.length}
-                    variant='info'
+                    variant="info"
                   >
                     <Link
                       to={{
-                        pathname: '/login',
-                        state: { from: 'cart' },
+                        pathname: "/login",
+                        state: { from: "cart" },
                       }}
-                      style={{ color: '#fff', textDecoration: 'none' }}
+                      style={{ color: "#fff", textDecoration: "none" }}
                     >
                       Log In To CheckOut
                     </Link>
@@ -249,7 +250,7 @@ const CartScreen = ({ history }) => {
         </Col>
       </Row>
     </>
-  )
-}
+  );
+};
 
-export default CartScreen
+export default CartScreen;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Row, Col } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { MultiSelect } from "react-multi-select-component";
 import Message from "../../components/Message";
@@ -16,7 +16,7 @@ import {
   UPLOAD_IMAGE_RESET,
 } from "../../constants/productConstants";
 import { listVariable } from "../../actions/variableActions";
-const ProductCreateScreen = ({ history }) => {
+const ProductCreateScreen = () => {
   const alert = useAlert();
   const [title, setTitle] = useState("");
   const [productType, setProductType] = useState("simple");
@@ -32,6 +32,7 @@ const ProductCreateScreen = ({ history }) => {
   const [availability, setAvailability] = useState("");
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   //check logged in user
   const userLogIn = useSelector((state) => state.userLogIn);
   const { userInfo } = userLogIn;
@@ -72,9 +73,9 @@ const ProductCreateScreen = ({ history }) => {
         dispatch({ type: CREATE_PRODUCT_RESET });
       }
     } else {
-      history.push("/");
+      navigate("/");
     }
-  }, [dispatch, success, alert, userInfo, history]);
+  }, [dispatch, success, alert, userInfo, navigate]);
 
   const submitHandler = (e) => {
     e.preventDefault();
