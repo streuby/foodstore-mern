@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import FormContainer from "../../components/FormContainer";
 import ItemSearch from "../../components/ItemSearch";
 import { Form, Button, Row, Table, Image } from "react-bootstrap";
+import Resizer from "react-image-file-resizer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LinkContainer } from "react-router-bootstrap";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -11,6 +12,7 @@ import {
   createCategory,
   deleteCategory,
   listCategory,
+  categoryUploadFile,
 } from "../../actions/categoryActions";
 import Loader from "../../components/Loader";
 import Message from "../../components/Message";
@@ -23,6 +25,7 @@ import { useNavigate } from "react-router-dom";
 
 const CategoryScreen = () => {
   const alert = useAlert();
+  const [errorMessage, setErrorMessage] = useState("");
   const [keyword, setKeyword] = useState("");
   const [category, setCategory] = useState("");
   const [image, setImage] = useState({});
@@ -75,6 +78,26 @@ const CategoryScreen = () => {
     }
   };
 
+  const uploadFileHandler = (e) => {
+    console.log("Fired file upload >>>>");
+    const file = e.target.files[0];
+    if (file) {
+      Resizer.imageFileResizer(
+        file,
+        150,
+        150,
+        "PNG",
+        100,
+        0,
+        (uri) => {
+          setErrorMessage("");
+          dispatch(categoryUploadFile(uri));
+        },
+        "base64"
+      );
+    }
+  };
+
   const searched = (keyword) => (category) =>
     category.name.toLowerCase().includes(keyword);
   return (
@@ -84,7 +107,20 @@ const CategoryScreen = () => {
         {error && <Message variant="danger">{error}</Message>}
         <Form onSubmit={submitHandler} className="my-5">
           <Form.Group controlId="image" className="mt-1">
-            <CategoryImageUploader setImage={setImage} image={image} />
+            <CategoryImageUploader
+              setImage={setImage}
+              image={image}
+              onError={errorMessage}
+            />
+            {image && !image.public_id && (
+              <Form.Control
+                className="mt-3"
+                type="file"
+                onChange={uploadFileHandler}
+                accept="image/*"
+                size="md"
+              />
+            )}
           </Form.Group>
           <Form.Group controlId="category">
             <Form.Label>Category</Form.Label>

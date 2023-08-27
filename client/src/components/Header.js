@@ -43,7 +43,7 @@ const Header = () => {
 
   return (
     <header>
-      <Navbar bg="dark" expand="lg" variant="dark" collapseOnSelect>
+      <Navbar bg="dark" expand="lg" variant="dark" fixed="top" collapseOnSelect>
         <Container>
           <LinkContainer to="/">
             <Navbar.Brand>Food Store</Navbar.Brand>
@@ -134,6 +134,9 @@ const Header = () => {
                   </LinkContainer>
                   <LinkContainer to="/admin/attribute">
                     <NavDropdown.Item>Attribute</NavDropdown.Item>
+                  </LinkContainer>
+                  <LinkContainer to="/admin/currency">
+                    <NavDropdown.Item>Currency</NavDropdown.Item>
                   </LinkContainer>
                   <LinkContainer to="/admin/coupon">
                     <NavDropdown.Item>Coupon</NavDropdown.Item>

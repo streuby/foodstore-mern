@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 config();
 import cloudinary, { config as _config } from "cloudinary";
+//import {v2 as cloudinary} from 'cloudinary';
 
 // config
 _config({

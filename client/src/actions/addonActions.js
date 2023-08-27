@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from "axios";
 import {
   ADDON_CREATE_FAIL,
   ADDON_CREATE_REQUEST,
@@ -15,28 +15,24 @@ import {
   ADDON_UPDATE_FAIL,
   ADDON_UPDATE_REQUEST,
   ADDON_UPDATE_SUCCESS,
-} from '../constants/addonConstants'
+} from "../constants/addonConstants";
 
 export const createAddon = (addon, price) => async (dispatch, getState) => {
   try {
-    dispatch({ type: ADDON_CREATE_REQUEST })
+    dispatch({ type: ADDON_CREATE_REQUEST });
     const {
       userLogIn: { userInfo },
-    } = getState()
+    } = getState();
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${userInfo.token}`,
       },
-    }
-    await axios.post(
-      `${process.env.REACT_APP_API}/api/addon`,
-      { name: addon, price },
-      config
-    )
+    };
+    await axios.post(`/api/addon`, { name: addon, price }, config);
 
-    dispatch({ type: ADDON_CREATE_SUCCESS })
+    dispatch({ type: ADDON_CREATE_SUCCESS });
   } catch (error) {
     dispatch({
       type: ADDON_CREATE_FAIL,
@@ -44,25 +40,22 @@ export const createAddon = (addon, price) => async (dispatch, getState) => {
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message,
-    })
+    });
   }
-}
+};
 
 export const listAddon = () => async (dispatch) => {
   try {
-    dispatch({ type: ADDON_LIST_REQUEST })
+    dispatch({ type: ADDON_LIST_REQUEST });
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-    }
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_API}/api/addon`,
-      config
-    )
+    };
+    const { data } = await axios.get(`/api/addon`, config);
 
-    dispatch({ type: ADDON_LIST_SUCCESS, payload: data })
+    dispatch({ type: ADDON_LIST_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
       type: ADDON_LIST_FAIL,
@@ -70,26 +63,26 @@ export const listAddon = () => async (dispatch) => {
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message,
-    })
+    });
   }
-}
+};
 
 export const deleteAddon = (slug) => async (dispatch, getState) => {
   try {
-    dispatch({ type: ADDON_DELETE_REQUEST })
+    dispatch({ type: ADDON_DELETE_REQUEST });
 
     const {
       userLogIn: { userInfo },
-    } = getState()
+    } = getState();
 
     const config = {
       headers: {
         Authorization: `Bearer ${userInfo.token}`,
       },
-    }
-    await axios.delete(`${process.env.REACT_APP_API}/api/addon/${slug}`, config)
+    };
+    await axios.delete(`/api/addon/${slug}`, config);
 
-    dispatch({ type: ADDON_DELETE_SUCCESS })
+    dispatch({ type: ADDON_DELETE_SUCCESS });
   } catch (error) {
     dispatch({
       type: ADDON_DELETE_FAIL,
@@ -97,25 +90,22 @@ export const deleteAddon = (slug) => async (dispatch, getState) => {
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message,
-    })
+    });
   }
-}
+};
 
 export const detailsAddon = (slug) => async (dispatch) => {
   try {
-    dispatch({ type: ADDON_DETAILS_REQUEST })
+    dispatch({ type: ADDON_DETAILS_REQUEST });
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-    }
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_API}/api/addon/${slug}`,
-      config
-    )
+    };
+    const { data } = await axios.get(`/api/addon/${slug}`, config);
 
-    dispatch({ type: ADDON_DETAILS_SUCCESS, payload: data })
+    dispatch({ type: ADDON_DETAILS_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
       type: ADDON_DETAILS_FAIL,
@@ -123,33 +113,29 @@ export const detailsAddon = (slug) => async (dispatch) => {
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message,
-    })
+    });
   }
-}
+};
 
 export const updateAddon =
   (newAddon, price, slug) => async (dispatch, getState) => {
     try {
-      dispatch({ type: ADDON_UPDATE_REQUEST })
+      dispatch({ type: ADDON_UPDATE_REQUEST });
 
       const {
         userLogIn: { userInfo },
-      } = getState()
+      } = getState();
 
       const config = {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${userInfo.token}`,
         },
-      }
+      };
 
-      await axios.put(
-        `${process.env.REACT_APP_API}/api/addon/${slug}`,
-        { name: newAddon, price },
-        config
-      )
+      await axios.put(`/api/addon/${slug}`, { name: newAddon, price }, config);
 
-      dispatch({ type: ADDON_UPDATE_SUCCESS })
+      dispatch({ type: ADDON_UPDATE_SUCCESS });
     } catch (error) {
       dispatch({
         type: ADDON_UPDATE_FAIL,
@@ -157,6 +143,6 @@ export const updateAddon =
           error.response && error.response.data.message
             ? error.response.data.message
             : error.message,
-      })
+      });
     }
-  }
+  };

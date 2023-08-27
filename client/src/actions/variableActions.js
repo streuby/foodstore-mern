@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from "axios";
 import {
   VARIABLE_CREATE_FAIL,
   VARIABLE_CREATE_REQUEST,
@@ -15,28 +15,24 @@ import {
   VARIABLE_UPDATE_FAIL,
   VARIABLE_UPDATE_REQUEST,
   VARIABLE_UPDATE_SUCCESS,
-} from '../constants/variableConstants'
+} from "../constants/variableConstants";
 
 export const createVariable = (variable) => async (dispatch, getState) => {
   try {
-    dispatch({ type: VARIABLE_CREATE_REQUEST })
+    dispatch({ type: VARIABLE_CREATE_REQUEST });
     const {
       userLogIn: { userInfo },
-    } = getState()
+    } = getState();
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${userInfo.token}`,
       },
-    }
-    await axios.post(
-      `${process.env.REACT_APP_API}/api/variable`,
-      variable,
-      config
-    )
+    };
+    await axios.post(`/api/variable`, variable, config);
 
-    dispatch({ type: VARIABLE_CREATE_SUCCESS })
+    dispatch({ type: VARIABLE_CREATE_SUCCESS });
   } catch (error) {
     dispatch({
       type: VARIABLE_CREATE_FAIL,
@@ -44,25 +40,22 @@ export const createVariable = (variable) => async (dispatch, getState) => {
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message,
-    })
+    });
   }
-}
+};
 
 export const listVariable = () => async (dispatch) => {
   try {
-    dispatch({ type: VARIABLE_LIST_REQUEST })
+    dispatch({ type: VARIABLE_LIST_REQUEST });
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-    }
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_API}/api/variable`,
-      config
-    )
+    };
+    const { data } = await axios.get(`/api/variable`, config);
 
-    dispatch({ type: VARIABLE_LIST_SUCCESS, payload: data })
+    dispatch({ type: VARIABLE_LIST_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
       type: VARIABLE_LIST_FAIL,
@@ -70,29 +63,26 @@ export const listVariable = () => async (dispatch) => {
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message,
-    })
+    });
   }
-}
+};
 
 export const deleteVariable = (id) => async (dispatch, getState) => {
   try {
-    dispatch({ type: VARIABLE_DELETE_REQUEST })
+    dispatch({ type: VARIABLE_DELETE_REQUEST });
 
     const {
       userLogIn: { userInfo },
-    } = getState()
+    } = getState();
 
     const config = {
       headers: {
         Authorization: `Bearer ${userInfo.token}`,
       },
-    }
-    await axios.delete(
-      `${process.env.REACT_APP_API}/api/variable/${id}`,
-      config
-    )
+    };
+    await axios.delete(`/api/variable/${id}`, config);
 
-    dispatch({ type: VARIABLE_DELETE_SUCCESS })
+    dispatch({ type: VARIABLE_DELETE_SUCCESS });
   } catch (error) {
     dispatch({
       type: VARIABLE_DELETE_FAIL,
@@ -100,25 +90,22 @@ export const deleteVariable = (id) => async (dispatch, getState) => {
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message,
-    })
+    });
   }
-}
+};
 
 export const detailsVariable = (id) => async (dispatch) => {
   try {
-    dispatch({ type: VARIABLE_DETAILS_REQUEST })
+    dispatch({ type: VARIABLE_DETAILS_REQUEST });
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-    }
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_API}/api/variable/${id}`,
-      config
-    )
+    };
+    const { data } = await axios.get(`/api/variable/${id}`, config);
 
-    dispatch({ type: VARIABLE_DETAILS_SUCCESS, payload: data })
+    dispatch({ type: VARIABLE_DETAILS_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
       type: VARIABLE_DETAILS_FAIL,
@@ -126,33 +113,29 @@ export const detailsVariable = (id) => async (dispatch) => {
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message,
-    })
+    });
   }
-}
+};
 
 export const updateVariable = (variable) => async (dispatch, getState) => {
-  const { label: name, attribute, variableId } = variable
+  const { label: name, attribute, variableId } = variable;
   try {
-    dispatch({ type: VARIABLE_UPDATE_REQUEST })
+    dispatch({ type: VARIABLE_UPDATE_REQUEST });
 
     const {
       userLogIn: { userInfo },
-    } = getState()
+    } = getState();
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${userInfo.token}`,
       },
-    }
+    };
 
-    await axios.put(
-      `${process.env.REACT_APP_API}/api/variable/${variableId}`,
-      { name, attribute },
-      config
-    )
+    await axios.put(`/api/variable/${variableId}`, { name, attribute }, config);
 
-    dispatch({ type: VARIABLE_UPDATE_SUCCESS })
+    dispatch({ type: VARIABLE_UPDATE_SUCCESS });
   } catch (error) {
     dispatch({
       type: VARIABLE_UPDATE_FAIL,
@@ -160,6 +143,6 @@ export const updateVariable = (variable) => async (dispatch, getState) => {
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message,
-    })
+    });
   }
-}
+};

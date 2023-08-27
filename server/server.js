@@ -18,6 +18,7 @@ import productRoutes from "./routes/productRoutes.js";
 import stripeRoutes from "./routes/stripeRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import variableRoutes from "./routes/variableRoutes.js";
+import currencyRoutes from "./routes/currencyRoutes.js";
 
 config();
 const app = express();
@@ -34,6 +35,7 @@ const routes = [
   stripeRoutes,
   userRoutes,
   variableRoutes,
+  currencyRoutes,
 ];
 
 connectDB();

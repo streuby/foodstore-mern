@@ -1,12 +1,10 @@
 import asyncHandler from "express-async-handler";
 import Variable from "../models/variableModel.js";
 
-const { create, find, findById, deleteOne } = Variable;
-
 export const variableCreate = asyncHandler(async (req, res) => {
   const { name, attribute } = req.body;
 
-  const variable = await create({
+  const variable = await Variable.create({
     name,
     attribute,
   });
@@ -19,7 +17,9 @@ export const variableCreate = asyncHandler(async (req, res) => {
 });
 
 export const variableList = asyncHandler(async (req, res) => {
-  const variable = await find({}).populate("attribute").sort({ createdAt: 1 });
+  const variable = await Variable.find({})
+    .populate("attribute")
+    .sort({ createdAt: 1 });
   if (variable) {
     res.json(variable);
   } else {
@@ -30,9 +30,9 @@ export const variableList = asyncHandler(async (req, res) => {
 
 export const variableDelete = asyncHandler(async (req, res) => {
   const variableId = req.params.id;
-  const variable = await findById(variableId);
+  const variable = await Variable.findById(variableId);
   if (variable) {
-    await deleteOne({ _id: variableId });
+    await Variable.deleteOne({ _id: variableId });
     res.json({
       message: "Variable Deleted",
     });
@@ -44,7 +44,7 @@ export const variableDelete = asyncHandler(async (req, res) => {
 
 export const variableById = asyncHandler(async (req, res) => {
   const variableId = req.params.id;
-  const variable = await findById(variableId).populate("attribute");
+  const variable = await Variable.findById(variableId).populate("attribute");
   if (variable) {
     res.json(variable);
   } else {
@@ -56,7 +56,7 @@ export const variableById = asyncHandler(async (req, res) => {
 export const variableUpdate = asyncHandler(async (req, res) => {
   const variableId = req.params.id;
   const { name, attribute } = req.body;
-  const variable = await findById(variableId);
+  const variable = await Variable.findById(variableId);
   if (variable) {
     variable.name = name;
     variable.attribute = attribute;

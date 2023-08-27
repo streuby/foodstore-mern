@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from "axios";
 import {
   ATTRIBUTE_CREATE_FAIL,
   ATTRIBUTE_CREATE_REQUEST,
@@ -15,29 +15,29 @@ import {
   ATTRIBUTE_UPDATE_FAIL,
   ATTRIBUTE_UPDATE_REQUEST,
   ATTRIBUTE_UPDATE_SUCCESS,
-} from '../constants/attributeConstants'
+} from "../constants/attributeConstants";
 
 export const createAttribute =
   (attribute, price, product) => async (dispatch, getState) => {
     try {
-      dispatch({ type: ATTRIBUTE_CREATE_REQUEST })
+      dispatch({ type: ATTRIBUTE_CREATE_REQUEST });
       const {
         userLogIn: { userInfo },
-      } = getState()
+      } = getState();
 
       const config = {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${userInfo.token}`,
         },
-      }
+      };
       await axios.post(
-        `${process.env.REACT_APP_API}/api/attribute`,
+        `/api/attribute`,
         { name: attribute, price, product },
         config
-      )
+      );
 
-      dispatch({ type: ATTRIBUTE_CREATE_SUCCESS })
+      dispatch({ type: ATTRIBUTE_CREATE_SUCCESS });
     } catch (error) {
       dispatch({
         type: ATTRIBUTE_CREATE_FAIL,
@@ -45,25 +45,22 @@ export const createAttribute =
           error.response && error.response.data.message
             ? error.response.data.message
             : error.message,
-      })
+      });
     }
-  }
+  };
 
 export const listAttribute = () => async (dispatch) => {
   try {
-    dispatch({ type: ATTRIBUTE_LIST_REQUEST })
+    dispatch({ type: ATTRIBUTE_LIST_REQUEST });
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-    }
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_API}/api/attribute`,
-      config
-    )
+    };
+    const { data } = await axios.get(`/api/attribute`, config);
 
-    dispatch({ type: ATTRIBUTE_LIST_SUCCESS, payload: data })
+    dispatch({ type: ATTRIBUTE_LIST_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
       type: ATTRIBUTE_LIST_FAIL,
@@ -71,29 +68,26 @@ export const listAttribute = () => async (dispatch) => {
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message,
-    })
+    });
   }
-}
+};
 
 export const deleteAttribute = (id) => async (dispatch, getState) => {
   try {
-    dispatch({ type: ATTRIBUTE_DELETE_REQUEST })
+    dispatch({ type: ATTRIBUTE_DELETE_REQUEST });
 
     const {
       userLogIn: { userInfo },
-    } = getState()
+    } = getState();
 
     const config = {
       headers: {
         Authorization: `Bearer ${userInfo.token}`,
       },
-    }
-    await axios.delete(
-      `${process.env.REACT_APP_API}/api/attribute/${id}`,
-      config
-    )
+    };
+    await axios.delete(`/api/attribute/${id}`, config);
 
-    dispatch({ type: ATTRIBUTE_DELETE_SUCCESS })
+    dispatch({ type: ATTRIBUTE_DELETE_SUCCESS });
   } catch (error) {
     dispatch({
       type: ATTRIBUTE_DELETE_FAIL,
@@ -101,25 +95,22 @@ export const deleteAttribute = (id) => async (dispatch, getState) => {
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message,
-    })
+    });
   }
-}
+};
 
 export const detailsAttribute = (id) => async (dispatch) => {
   try {
-    dispatch({ type: ATTRIBUTE_DETAILS_REQUEST })
+    dispatch({ type: ATTRIBUTE_DETAILS_REQUEST });
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-    }
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_API}/api/attribute/${id}`,
-      config
-    )
+    };
+    const { data } = await axios.get(`/api/attribute/${id}`, config);
 
-    dispatch({ type: ATTRIBUTE_DETAILS_SUCCESS, payload: data })
+    dispatch({ type: ATTRIBUTE_DETAILS_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
       type: ATTRIBUTE_DETAILS_FAIL,
@@ -127,33 +118,33 @@ export const detailsAttribute = (id) => async (dispatch) => {
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message,
-    })
+    });
   }
-}
+};
 
 export const updateAttribute =
   (newAttribute, price, product, attributeId) => async (dispatch, getState) => {
     try {
-      dispatch({ type: ATTRIBUTE_UPDATE_REQUEST })
+      dispatch({ type: ATTRIBUTE_UPDATE_REQUEST });
 
       const {
         userLogIn: { userInfo },
-      } = getState()
+      } = getState();
 
       const config = {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${userInfo.token}`,
         },
-      }
+      };
 
       await axios.put(
-        `${process.env.REACT_APP_API}/api/attribute/${attributeId}`,
+        `/api/attribute/${attributeId}`,
         { name: newAttribute, price, product },
         config
-      )
+      );
 
-      dispatch({ type: ATTRIBUTE_UPDATE_SUCCESS })
+      dispatch({ type: ATTRIBUTE_UPDATE_SUCCESS });
     } catch (error) {
       dispatch({
         type: ATTRIBUTE_UPDATE_FAIL,
@@ -161,6 +152,6 @@ export const updateAttribute =
           error.response && error.response.data.message
             ? error.response.data.message
             : error.message,
-      })
+      });
     }
-  }
+  };

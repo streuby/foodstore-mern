@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { lazy, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import CategoryCarousalHome from "../components/CategoryCarousalHome";
 import ProductByCategory from "../components/ProductByCategory";
-
+import ThreeDCarousel from "../components/slider/threeD/ThreeDCarousel";
+import { styled } from "styled-components";
 import { useAlert } from "react-alert";
 import { ADD_TO_WISHLIST_RESET } from "../constants/userConstants";
 import Meta from "../components/Meta";
+
 const HomeScreen = () => {
   const alert = useAlert();
   const [catSlug, setCatSlug] = useState("appetizer");
@@ -26,7 +27,9 @@ const HomeScreen = () => {
   return (
     <div>
       <Meta title="Food Store | Home" />
-      <CategoryCarousalHome setCatSlug={setCatSlug} />
+      {/* <CategoryCarousalHome setCatSlug={setCatSlug} /> */}
+      {/* <SwiperSlider setCatSlug={setCatSlug} /> */}
+      <ThreeDCarousel setCatSlug={setCatSlug} />
       <ProductByCategory
         catSlug={catSlug}
         userInfo={userInfo}

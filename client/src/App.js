@@ -2,6 +2,8 @@ import React, { lazy, Suspense } from "react";
 import { Container, Image } from "react-bootstrap";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import loadingGif from "./image/Bean Eater-1s-207px.gif";
+import { styled } from "styled-components";
+import bgImg from "./images/bg-img-4.png";
 
 const Footer = lazy(() => import("./components/Footer"));
 const Header = lazy(() => import("./components/Header"));
@@ -39,6 +41,10 @@ const AttributeScreen = lazy(() => import("./screens/admin/AttributeScreen"));
 const AttributeEditScreen = lazy(() =>
   import("./screens/admin/AttributeEditScreen")
 );
+const CurrencyEditScreen = lazy(() =>
+  import("./screens/admin/CurrencyEditScreen")
+);
+const CurrencyScreen = lazy(() => import("./screens/admin/CurrencyScreen"));
 const VariableEditScreen = lazy(() =>
   import("./screens/admin/VariableEditScreen")
 );
@@ -60,6 +66,15 @@ const ManageOrderScreen = lazy(() =>
 const UserDetailsScreen = lazy(() =>
   import("./screens/admin/UserDetailsScreen")
 );
+
+const AppDiv = styled.div`
+  background-image: url(${(props) => props.backgroundImage});
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+  height: 100%;
+  margin: 10px auto;
+`;
 
 function App() {
   // const dispatch = useDispatch()
@@ -94,121 +109,141 @@ function App() {
   //   return () => unsubscribe()
   // }, [dispatch])
   return (
-    <Suspense
-      fallback={
-        <div
-          className="d-flex align-items-center justify-content-center"
-          style={{ height: "100vh" }}
-        >
-          <Image src={loadingGif} alt="loader" className="w-md-75 w-sm-25" />
-        </div>
-      }
-    >
-      <Router basename="/">
-        <Header />
-        <main className="py-3">
-          <Container>
-            <Routes>
-              <Route path="/" element={<HomeScreen />} exact />
-              <Route path="/register" element={<RegisterScreen />} exact />
-              <Route path="/login" element={<LoginScreen />} />
-              <Route
-                path="/forgot/password"
-                element={<ForgetPasswordScreen />}
-              />
-              <Route
-                path="/register/complete"
-                element={<RegisterCompleteScreen />}
-              />
-              <Route
-                path="/user/orderhistory"
-                element={<OrderHistoryScreen />}
-                exact
-              />
-              <Route path="/user/wishlist" element={<WishlistScreen />} exact />
-              <Route path="/user/password" element={<PasswordScreen />} exact />
-              <Route
-                path="/admin/userlist"
-                element={<UserListScreen />}
-                exact
-              />
-              <Route
-                path="/admin/category"
-                element={<CategoryScreen />}
-                exact
-              />
-              <Route
-                path="/admin/category/:slug/edit"
-                element={<CategoryEditScreen />}
-                exact
-              />
-              <Route
-                path="/category/:slug"
-                element={<CategoryArchiveScreen />}
-                exact
-              />
-              <Route path="/admin/addon" element={<AddonScreen />} exact />
-              <Route
-                path="/admin/addon/:slug/edit"
-                element={<AddonEditScreen />}
-                exact
-              />
-              <Route
-                path="/admin/products"
-                element={<ProductListScreen />}
-                exact
-              />
-              <Route
-                path="/admin/product/create"
-                element={<ProductCreateScreen />}
-                exact
-              />
-              <Route
-                path="/admin/product/:slug/edit"
-                element={<ProductEditScreen />}
-                exact
-              />
-              <Route
-                path="/admin/attribute"
-                element={<AttributeScreen />}
-                exact
-              />
-              <Route
-                path="/admin/attribute/:id/edit"
-                element={<AttributeEditScreen />}
-                exact
-              />
-              <Route
-                path="/admin/variables"
-                element={<VariableCreateScreen />}
-                exact
-              />
-              <Route
-                path="/admin/variable/:id/edit"
-                element={<VariableEditScreen />}
-                exact
-              />
-              <Route path="/admin/coupon" element={<CouponScreen />} />
-              <Route
-                path="/admin/manageorder"
-                element={<ManageOrderScreen />}
-              />
-              <Route
-                path="/product/:slug"
-                element={<SingleProductScreen />}
-                exact
-              />
-              <Route path="/cart" element={<CartScreen />} />
-              <Route path="/checkout" element={<CheckoutScreen />} />
-              <Route path="/placeorder" element={<PlaceOrderScreen />} />
-              <Route path="/order/:id" element={<OrderDetailsScreen />} />
-              <Route path="/admin/user/:id" element={<UserDetailsScreen />} />
-            </Routes>
-          </Container>
-        </main>
-        <Footer />
-      </Router>
-    </Suspense>
+    <AppDiv backgroundImage={bgImg} className="mt-5">
+      <Suspense
+        fallback={
+          <div
+            className="d-flex align-items-center justify-content-center"
+            style={{ height: "100vh" }}
+          >
+            <Image src={loadingGif} alt="loader" className="w-md-75 w-sm-25" />
+          </div>
+        }
+      >
+        <Router basename="/">
+          <Header />
+          <main className="py-3">
+            <Container>
+              <Routes>
+                <Route path="/" element={<HomeScreen />} exact />
+                <Route path="/register" element={<RegisterScreen />} exact />
+                <Route path="/login" element={<LoginScreen />} />
+                <Route
+                  path="/forgot/password"
+                  element={<ForgetPasswordScreen />}
+                />
+                <Route
+                  path="/register/complete"
+                  element={<RegisterCompleteScreen />}
+                />
+                <Route
+                  path="/user/orderhistory"
+                  element={<OrderHistoryScreen />}
+                  exact
+                />
+                <Route
+                  path="/user/wishlist"
+                  element={<WishlistScreen />}
+                  exact
+                />
+                <Route
+                  path="/user/password"
+                  element={<PasswordScreen />}
+                  exact
+                />
+                <Route
+                  path="/admin/userlist"
+                  element={<UserListScreen />}
+                  exact
+                />
+                <Route
+                  path="/admin/category"
+                  element={<CategoryScreen />}
+                  exact
+                />
+                <Route
+                  path="/admin/category/:slug/edit"
+                  element={<CategoryEditScreen />}
+                  exact
+                />
+                <Route
+                  path="/category/:slug"
+                  element={<CategoryArchiveScreen />}
+                  exact
+                />
+                <Route path="/admin/addon" element={<AddonScreen />} exact />
+                <Route
+                  path="/admin/addon/:slug/edit"
+                  element={<AddonEditScreen />}
+                  exact
+                />
+                <Route
+                  path="/admin/products"
+                  element={<ProductListScreen />}
+                  exact
+                />
+                <Route
+                  path="/admin/product/create"
+                  element={<ProductCreateScreen />}
+                  exact
+                />
+                <Route
+                  path="/admin/product/:slug/edit"
+                  element={<ProductEditScreen />}
+                  exact
+                />
+                <Route
+                  path="/admin/attribute"
+                  element={<AttributeScreen />}
+                  exact
+                />
+                <Route
+                  path="/admin/currency"
+                  element={<CurrencyScreen />}
+                  exact
+                />
+                <Route
+                  path="/admin/attribute/:id/edit"
+                  element={<AttributeEditScreen />}
+                  exact
+                />
+                <Route
+                  path="/admin/currency/:id/edit"
+                  element={<CurrencyEditScreen />}
+                  exact
+                />
+                <Route
+                  path="/admin/variables"
+                  element={<VariableCreateScreen />}
+                  exact
+                />
+                <Route
+                  path="/admin/variable/:id/edit"
+                  element={<VariableEditScreen />}
+                  exact
+                />
+                <Route path="/admin/coupon" element={<CouponScreen />} />
+                <Route
+                  path="/admin/manageorder"
+                  element={<ManageOrderScreen />}
+                />
+                <Route
+                  path="/product/:slug"
+                  element={<SingleProductScreen />}
+                  exact
+                />
+                <Route path="/cart" element={<CartScreen />} />
+                <Route path="/checkout" element={<CheckoutScreen />} />
+                <Route path="/placeorder" element={<PlaceOrderScreen />} />
+                <Route path="/order/:id" element={<OrderDetailsScreen />} />
+                <Route path="/admin/user/:id" element={<UserDetailsScreen />} />
+              </Routes>
+            </Container>
+          </main>
+          <Footer />
+        </Router>
+      </Suspense>
+    </AppDiv>
   );
 }
 

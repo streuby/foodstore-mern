@@ -74,11 +74,7 @@ export const currentUser = async (token) => {
       Authorization: `Bearer ${token}`,
     },
   };
-  const { data } = await axios.post(
-    `${process.env.REACT_APP_API}/api/auth/current-user`,
-    {},
-    config
-  );
+  const { data } = await axios.post(`/api/auth/current-user`, {}, config);
   const { email, name, _id, role, shipping } = data;
   localStorage.setItem(
     "userInfo",
@@ -112,10 +108,7 @@ export const listUsers = () => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_API}/api/users`,
-      config
-    );
+    const { data } = await axios.get(`/api/users`, config);
     dispatch({
       type: USER_LIST_SUCCESS,
       payload: data,
@@ -147,11 +140,7 @@ export const saveShippingAddress = (shipping) => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
-    await axios.post(
-      `${process.env.REACT_APP_API}/api/users`,
-      { shipping },
-      config
-    );
+    await axios.post(`/api/users`, { shipping }, config);
     dispatch({
       type: CART_SAVE_SHIPPING_ADDRESS_SUCCESS,
     });
@@ -182,10 +171,7 @@ export const detailsUser = (id) => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_API}/api/admin/usersDetails/${id}`,
-      config
-    );
+    const { data } = await axios.get(`/api/admin/usersDetails/${id}`, config);
     dispatch({
       type: USER_DETAILS_SUCCESS,
       payload: data,
@@ -216,11 +202,7 @@ export const addToWish = (id) => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
-    await axios.post(
-      `${process.env.REACT_APP_API}/api/wishlist/${id}`,
-      {},
-      config
-    );
+    await axios.post(`/api/wishlist/${id}`, {}, config);
     dispatch({ type: ADD_TO_WISHLIST_SUCCESS });
   } catch (error) {
     dispatch({
@@ -247,11 +229,7 @@ export const removeToWish = (id) => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
-    await axios.put(
-      `${process.env.REACT_APP_API}/api/wishlist/${id}`,
-      {},
-      config
-    );
+    await axios.put(`/api/wishlist/${id}`, {}, config);
     dispatch({ type: REMOVE_WISHLIST_SUCCESS });
   } catch (error) {
     dispatch({
@@ -278,10 +256,7 @@ export const listWishes = () => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_API}/api/wishlist`,
-      config
-    );
+    const { data } = await axios.get(`/api/wishlist`, config);
     dispatch({ type: LIST_WISHLIST_SUCCESS, payload: data.wishlist });
   } catch (error) {
     dispatch({

@@ -8,7 +8,10 @@ import Loader from "../../components/Loader";
 import FormContainer from "../../components/FormContainer";
 import { listCategory } from "../../actions/categoryActions";
 import { listAddon } from "../../actions/addonActions";
+import { listCurrency } from "../../actions/currencyActions";
 import ImageUploader from "../../components/form/ImageUploader";
+import Resizer from "react-image-file-resizer";
+import { uploadFile } from "../../actions/productActions";
 import { useAlert } from "react-alert";
 import { createProduct } from "../../actions/productActions";
 import {
@@ -18,6 +21,7 @@ import {
 import { listVariable } from "../../actions/variableActions";
 const ProductCreateScreen = () => {
   const alert = useAlert();
+  const [errorMessage, setErrorMessage] = useState("");
   const [title, setTitle] = useState("");
   const [productType, setProductType] = useState("simple");
   const [price, setPrice] = useState("");
@@ -30,6 +34,7 @@ const ProductCreateScreen = () => {
   const [description, setDescription] = useState("");
   const [delivery, setDelivery] = useState("");
   const [availability, setAvailability] = useState("");
+  const [selectedCurrencies, setSelectedCurrencies] = useState([]);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -51,11 +56,15 @@ const ProductCreateScreen = () => {
   const variableList = useSelector((state) => state.variableList);
   const { variables } = variableList;
 
+  const currencyList = useSelector((state) => state.currencyList);
+  const { currencies } = currencyList;
+
   useEffect(() => {
     if (userInfo && userInfo.role === "admin") {
       dispatch(listCategory());
       dispatch(listAddon());
       dispatch(listVariable());
+      dispatch(listCurrency());
       if (success) {
         alert.success("Product Created");
         setTitle("");
@@ -65,6 +74,7 @@ const ProductCreateScreen = () => {
         setImage({});
         setCategory("");
         setSelectedAddon([]);
+        setSelectedCurrencies([]);
         setSold(0);
         setDescription("");
         setDelivery("");
@@ -86,6 +96,7 @@ const ProductCreateScreen = () => {
         price,
         variable,
         category,
+        currency: selectedCurrencies,
         addon: selectedAddon.map((a) => a.value),
         sold,
         description,
@@ -93,6 +104,25 @@ const ProductCreateScreen = () => {
         availability,
       })
     );
+  };
+
+  const uploadFileHandler = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      Resizer.imageFileResizer(
+        file,
+        720,
+        720,
+        "JPEG",
+        100,
+        0,
+        (uri) => {
+          setErrorMessage("");
+          dispatch(uploadFile(uri));
+        },
+        "base64"
+      );
+    }
   };
   return (
     <>
@@ -106,7 +136,20 @@ const ProductCreateScreen = () => {
         {error && <Message variant="danger">{error}</Message>}
         <Form onSubmit={submitHandler}>
           <Form.Group controlId="image" className="mt-1">
-            <ImageUploader setImage={setImage} image={image} />
+            <ImageUploader
+              setImage={setImage}
+              image={image}
+              onError={errorMessage}
+            />
+            {image && !image.public_id && (
+              <Form.Control
+                className="mt-3"
+                type="file"
+                onChange={uploadFileHandler}
+                accept="image/*"
+                size="md"
+              />
+            )}
           </Form.Group>
           <Form.Group controlId="name">
             <Form.Label>Name</Form.Label>
@@ -128,6 +171,19 @@ const ProductCreateScreen = () => {
               <option value="simple">Simple Product</option>
               <option value="variable">Variable Product</option>
             </Form.Control>
+          </Form.Group>
+          <Form.Group controlId="attribute">
+            <Form.Label>Currencie</Form.Label>
+            <MultiSelect
+              options={currencies.map((a) => ({
+                label: `${a.name} - ${a.symbol}`,
+                value: a._id,
+              }))}
+              value={selectedCurrencies}
+              onChange={setSelectedCurrencies}
+              labelledBy="Select Attributes"
+              className="product-attributes"
+            />
           </Form.Group>
           {productType === "simple" ? (
             <Form.Group controlId="price">
@@ -168,7 +224,8 @@ const ProductCreateScreen = () => {
               value={category}
             >
               <option>Select Category</option>
-              {categories.length > 0 &&
+              {categories &&
+                categories.length > 0 &&
                 categories.map((c) => (
                   <option key={c._id} value={c._id}>
                     {c.name}

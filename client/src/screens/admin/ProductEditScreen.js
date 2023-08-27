@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Row, Col } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "../../components/Message";
 import Loader from "../../components/Loader";
@@ -18,8 +18,7 @@ import {
 import { listVariable } from "../../actions/variableActions";
 import { MultiSelect } from "react-multi-select-component";
 
-const ProductEditScreen = ({ match }) => {
-  const productSlug = match.params.slug;
+const ProductEditScreen = () => {
   const alert = useAlert();
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
@@ -34,6 +33,9 @@ const ProductEditScreen = ({ match }) => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const params = useParams();
+
+  const { slug: productSlug } = params;
   //check logged in user
   const userLogIn = useSelector((state) => state.userLogIn);
   const { userInfo } = userLogIn;

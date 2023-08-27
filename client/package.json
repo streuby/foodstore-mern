@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@david.kucsai/react-pdf-table": "^0.3.0",
+    "@egjs/react-flicking": "^4.11.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-brands-svg-icons": "^5.15.3",
     "@fortawesome/free-regular-svg-icons": "^5.15.3",
@@ -23,6 +24,7 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
+    "3d-react-carousal": "^5.0.0",
     "axios": "^0.21.1",
     "firebase": "^8.6.8",
     "react": "^18.2.0",
@@ -46,7 +48,9 @@
     "redux": "^4.1.0",
     "redux-devtools-extension": "^2.13.9",
     "redux-thunk": "^2.3.0",
-    "slick-carousel": "^1.8.1"
+    "slick-carousel": "^1.8.1",
+    "styled-components": "^6.0.7",
+    "swiper": "^6.8.4"
   },
   "scripts": {
     "start": "set PORT=3000 && react-scripts --openssl-legacy-provider start",

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from "axios";
 import {
   ADMIN_ORDER_LIST_FAIL,
   ADMIN_ORDER_LIST_REQUEST,
@@ -18,28 +18,28 @@ import {
   USER_ORDER_LIST_FAIL,
   USER_ORDER_LIST_REQUEST,
   USER_ORDER_LIST_SUCCESS,
-} from '../constants/orderConstants'
+} from "../constants/orderConstants";
 
 export const createOrder =
   (paymentIntent, paymentMethod) => async (dispatch, getState) => {
     try {
-      dispatch({ type: ORDER_CREATE_REQUEST })
+      dispatch({ type: ORDER_CREATE_REQUEST });
       const {
         userLogIn: { userInfo },
-      } = getState()
+      } = getState();
 
       const config = {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${userInfo.token}`,
         },
-      }
+      };
       const { data } = await axios.post(
-        `${process.env.REACT_APP_API}/api/order`,
+        `/api/order`,
         { paymentIntent, paymentMethod },
         config
-      )
-      dispatch({ type: ORDER_CREATE_SUCCESS, payload: data })
+      );
+      dispatch({ type: ORDER_CREATE_SUCCESS, payload: data });
     } catch (error) {
       dispatch({
         type: ORDER_CREATE_FAIL,
@@ -47,27 +47,24 @@ export const createOrder =
           error.response && error.response.data.message
             ? error.response.data.message
             : error.message,
-      })
+      });
     }
-  }
+  };
 
 export const detailsOrder = (id) => async (dispatch, getState) => {
   try {
-    dispatch({ type: ORDER_DETAILS_REQUEST })
+    dispatch({ type: ORDER_DETAILS_REQUEST });
     const {
       userLogIn: { userInfo },
-    } = getState()
+    } = getState();
 
     const config = {
       headers: {
         Authorization: `Bearer ${userInfo.token}`,
       },
-    }
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_API}/api/order/${id}`,
-      config
-    )
-    dispatch({ type: ORDER_DETAILS_SUCCESS, payload: data })
+    };
+    const { data } = await axios.get(`/api/order/${id}`, config);
+    dispatch({ type: ORDER_DETAILS_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
       type: ORDER_DETAILS_FAIL,
@@ -75,27 +72,24 @@ export const detailsOrder = (id) => async (dispatch, getState) => {
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message,
-    })
+    });
   }
-}
+};
 
 export const listOrderUser = () => async (dispatch, getState) => {
   try {
-    dispatch({ type: USER_ORDER_LIST_REQUEST })
+    dispatch({ type: USER_ORDER_LIST_REQUEST });
     const {
       userLogIn: { userInfo },
-    } = getState()
+    } = getState();
 
     const config = {
       headers: {
         Authorization: `Bearer ${userInfo.token}`,
       },
-    }
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_API}/api/order`,
-      config
-    )
-    dispatch({ type: USER_ORDER_LIST_SUCCESS, payload: data })
+    };
+    const { data } = await axios.get(`/api/order`, config);
+    dispatch({ type: USER_ORDER_LIST_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
       type: USER_ORDER_LIST_FAIL,
@@ -103,27 +97,24 @@ export const listOrderUser = () => async (dispatch, getState) => {
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message,
-    })
+    });
   }
-}
+};
 
 export const listOrderAdmin = () => async (dispatch, getState) => {
   try {
-    dispatch({ type: ADMIN_ORDER_LIST_REQUEST })
+    dispatch({ type: ADMIN_ORDER_LIST_REQUEST });
     const {
       userLogIn: { userInfo },
-    } = getState()
+    } = getState();
 
     const config = {
       headers: {
         Authorization: `Bearer ${userInfo.token}`,
       },
-    }
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_API}/api/admin/orderlist`,
-      config
-    )
-    dispatch({ type: ADMIN_ORDER_LIST_SUCCESS, payload: data })
+    };
+    const { data } = await axios.get(`/api/admin/orderlist`, config);
+    dispatch({ type: ADMIN_ORDER_LIST_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
       type: ADMIN_ORDER_LIST_FAIL,
@@ -131,29 +122,25 @@ export const listOrderAdmin = () => async (dispatch, getState) => {
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message,
-    })
+    });
   }
-}
+};
 
 export const updateOrderStatus = (id, status) => async (dispatch, getState) => {
   try {
-    dispatch({ type: ORDER_STATUS_UPDATE_REQUEST })
+    dispatch({ type: ORDER_STATUS_UPDATE_REQUEST });
     const {
       userLogIn: { userInfo },
-    } = getState()
+    } = getState();
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${userInfo.token}`,
       },
-    }
-    await axios.put(
-      `${process.env.REACT_APP_API}/api/admin/orderStatus/${id}`,
-      { status },
-      config
-    )
-    dispatch({ type: ORDER_STATUS_UPDATE_SUCCESS })
+    };
+    await axios.put(`/api/admin/orderStatus/${id}`, { status }, config);
+    dispatch({ type: ORDER_STATUS_UPDATE_SUCCESS });
   } catch (error) {
     dispatch({
       type: ORDER_STATUS_UPDATE_FAIL,
@@ -161,30 +148,26 @@ export const updateOrderStatus = (id, status) => async (dispatch, getState) => {
         error.response && error.response.data.message
           ? error.response.data.message
           : error.message,
-    })
+    });
   }
-}
+};
 
 export const updatePaymentStatus =
   (id, status) => async (dispatch, getState) => {
     try {
-      dispatch({ type: PAYMENT_STATUS_UPDATE_REQUEST })
+      dispatch({ type: PAYMENT_STATUS_UPDATE_REQUEST });
       const {
         userLogIn: { userInfo },
-      } = getState()
+      } = getState();
 
       const config = {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${userInfo.token}`,
         },
-      }
-      await axios.put(
-        `${process.env.REACT_APP_API}/api/admin/paymentStatus/${id}`,
-        { status },
-        config
-      )
-      dispatch({ type: PAYMENT_STATUS_UPDATE_SUCCESS })
+      };
+      await axios.put(`/api/admin/paymentStatus/${id}`, { status }, config);
+      dispatch({ type: PAYMENT_STATUS_UPDATE_SUCCESS });
     } catch (error) {
       dispatch({
         type: PAYMENT_STATUS_UPDATE_FAIL,
@@ -192,6 +175,6 @@ export const updatePaymentStatus =
           error.response && error.response.data.message
             ? error.response.data.message
             : error.message,
-      })
+      });
     }
-  }
+  };

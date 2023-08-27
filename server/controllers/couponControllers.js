@@ -1,11 +1,9 @@
 import asyncHandler from "express-async-handler";
 import Coupon from "../models/couponModels.js";
 
-const { create, find, findById } = Coupon;
-
 export const couponCreate = asyncHandler(async (req, res) => {
   const { name, expiry, discount } = req.body;
-  const createCoupon = await create({
+  const createCoupon = await Coupon.create({
     name,
     expiry,
     discount,
@@ -19,7 +17,7 @@ export const couponCreate = asyncHandler(async (req, res) => {
 });
 
 export const couponList = asyncHandler(async (req, res) => {
-  const coupon = await find({}).sort({ createdAt: -1 }).exec();
+  const coupon = await Coupon.find({}).sort({ createdAt: -1 }).exec();
   if (coupon) {
     res.json(coupon);
   } else {
@@ -29,7 +27,7 @@ export const couponList = asyncHandler(async (req, res) => {
 });
 
 export const couponDelete = asyncHandler(async (req, res) => {
-  const coupon = await findById(req.params.id);
+  const coupon = await Coupon.findOne(req.params.id);
   if (coupon) {
     await coupon.remove();
     res.json({

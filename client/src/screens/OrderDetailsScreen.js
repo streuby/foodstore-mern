@@ -14,14 +14,16 @@ import { Form, Row, Col, ListGroup, Image, Badge } from "react-bootstrap";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Invoice from "../components/Invoice";
 import Meta from "../components/Meta";
 
-const OrderDetailsScreen = ({ match }) => {
-  const orderId = match.params.id;
+const OrderDetailsScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const params = useParams();
+
+  const { id: orderId } = params;
 
   const userLogIn = useSelector((state) => state.userLogIn);
   const { userInfo } = userLogIn;

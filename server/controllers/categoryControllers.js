@@ -4,10 +4,6 @@ import Product from "../models/productModel.js";
 import slugify from "slugify";
 import cloudinary from "../config/cloudinary.js";
 
-const { findOne, create, find } = Category;
-
-const { find: _find } = Product;
-
 export const categoryUploadImage = asyncHandler(async (req, res) => {
   const result = await cloudinary.v2.uploader.upload(req.body.image, {
     upload_preset: "foodcat",
@@ -35,13 +31,13 @@ export const categoryRemoveImage = asyncHandler(async (req, res) => {
 
 export const categoryCreate = asyncHandler(async (req, res) => {
   const { category, image } = req.body;
-  const categoryExist = await findOne({ slug: slugify(category) });
+  const categoryExist = await Category.findOne({ slug: slugify(category) });
 
   if (categoryExist) {
     res.status(500);
     throw new Error("Category with the same name already exist");
   } else {
-    const createdCategory = await create({
+    const createdCategory = await Category.create({
       name: category,
       image,
       slug: slugify(category),
@@ -56,7 +52,7 @@ export const categoryCreate = asyncHandler(async (req, res) => {
 });
 
 export const categoryList = asyncHandler(async (req, res) => {
-  const category = await find({}).sort({ createdAt: 1 });
+  const category = await Category.find({}).sort({ createdAt: 1 });
   if (category) {
     res.json(category);
   } else {
@@ -67,7 +63,7 @@ export const categoryList = asyncHandler(async (req, res) => {
 
 export const categoryBySlug = asyncHandler(async (req, res) => {
   const slug = req.params.slug;
-  const category = await findOne({ slug });
+  const category = await Category.findOne({ slug });
   if (category) {
     res.json(category);
   } else {
@@ -78,7 +74,7 @@ export const categoryBySlug = asyncHandler(async (req, res) => {
 
 export const categoryUpdate = asyncHandler(async (req, res) => {
   const { name, image } = req.body;
-  const category = await findOne({ slug: req.params.slug });
+  const category = await Category.findOne({ slug: req.params.slug });
   if (category) {
     category.name = name;
     category.image = image;
@@ -93,7 +89,7 @@ export const categoryUpdate = asyncHandler(async (req, res) => {
 
 export const categoryDelete = asyncHandler(async (req, res) => {
   const slug = req.params.slug;
-  const category = await findOne({ slug });
+  const category = await Category.findOne({ slug });
 
   if (category) {
     await cloudinary.v2.uploader.destroy(category.image.public_id);
@@ -108,8 +104,8 @@ export const categoryDelete = asyncHandler(async (req, res) => {
 });
 
 export const productsByCategory = asyncHandler(async (req, res) => {
-  const category = await findOne({ slug: req.body.slug });
-  const products = await _find({ category, availability: "Yes" })
+  const category = await Category.findOne({ slug: req.body.slug });
+  const products = await Product.find({ category, availability: "Yes" })
     .sort([["title", "ASC"]])
     .populate("category")
     .populate("addon")

@@ -1,24 +1,32 @@
 import React, { useEffect, useState } from "react";
 import FormContainer from "../../components/FormContainer";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import Loader from "../../components/Loader";
 import Message from "../../components/Message";
 import { useDispatch, useSelector } from "react-redux";
-import { detailsCategory, updateCategory } from "../../actions/categoryActions";
+import {
+  detailsCategory,
+  updateCategory,
+  categoryUploadFile,
+} from "../../actions/categoryActions";
+import Resizer from "react-image-file-resizer";
 import {
   CATEGORY_DETAILS_RESET,
   CATEGORY_UPDATE_RESET,
   UPLOAD_CATEGORY_IMAGE_RESET,
 } from "../../constants/categoryConstants";
 import CategoryImageUploader from "../../components/form/CategoryImageUploader";
-const CategoryEditScreen = ({ match }) => {
-  const categorySlug = match.params.slug;
+const CategoryEditScreen = () => {
+  const [errorMessage, setErrorMessage] = useState("");
   const [category, setCategory] = useState("");
   const [image, setImage] = useState({});
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const params = useParams();
+
+  const { slug: categorySlug } = params;
 
   //check logged in user
 
@@ -61,6 +69,26 @@ const CategoryEditScreen = ({ match }) => {
     dispatch(updateCategory({ name: category, image, slug: categorySlug }));
   };
 
+  const uploadFileHandler = (e) => {
+    console.log("Fired file upload >>>>");
+    const file = e.target.files[0];
+    if (file) {
+      Resizer.imageFileResizer(
+        file,
+        150,
+        150,
+        "PNG",
+        100,
+        0,
+        (uri) => {
+          setErrorMessage("");
+          dispatch(categoryUploadFile(uri));
+        },
+        "base64"
+      );
+    }
+  };
+
   return (
     <>
       <Link to="/admin/category" className="btn btn-dark my-3">
@@ -73,7 +101,20 @@ const CategoryEditScreen = ({ match }) => {
         <Form onSubmit={submitHandler} className="my-5">
           <Form.Group controlId="Update category">
             <Form.Group controlId="image" className="mt-1">
-              <CategoryImageUploader setImage={setImage} image={image} />
+              <CategoryImageUploader
+                setImage={setImage}
+                image={image}
+                onError={errorMessage}
+              />
+              {image && !image.public_id && (
+                <Form.Control
+                  className="mt-3"
+                  type="file"
+                  onChange={uploadFileHandler}
+                  accept="image/*"
+                  size="md"
+                />
+              )}
             </Form.Group>
             <Form.Label>Category</Form.Label>
             <Form.Control

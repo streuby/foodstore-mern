@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import FormContainer from "../../components/FormContainer";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import Loader from "../../components/Loader";
 import Message from "../../components/Message";
@@ -14,13 +14,16 @@ import {
 import { listAttribute } from "../../actions/attributeActions";
 import { MultiSelect } from "react-multi-select-component";
 
-const VariableEditScreen = ({ match }) => {
+const VariableEditScreen = () => {
   const alert = useAlert();
-  const variableId = match.params.id;
+
   const [label, setLabel] = useState("");
   const [selectedAttribute, setSelectedAttribute] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const params = useParams();
+
+  const { id: variableId } = params;
 
   //check logged in user
   const userLogIn = useSelector((state) => state.userLogIn);

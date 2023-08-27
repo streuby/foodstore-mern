@@ -23,9 +23,7 @@ export const addToCart =
   (slug, qty, variable = null, addonPd = null) =>
   async (dispatch, getState) => {
     if (slug || qty || variable || addonPd) {
-      const { data } = await axios.get(
-        `${process.env.REACT_APP_API}/api/product/${slug}`
-      );
+      const { data } = await axios.get(`/api/product/${slug}`);
 
       dispatch({
         type: CART_ADD_ITEM,
@@ -122,7 +120,7 @@ export const dbSaveCart = (cart) => async (dispatch, getState) => {
       },
     };
 
-    await axios.post(`${process.env.REACT_APP_API}/api/cart`, { cart }, config);
+    await axios.post(`/api/cart`, { cart }, config);
     dispatch({ type: CART_DB_SUCCESS });
   } catch (error) {
     dispatch({
@@ -149,10 +147,7 @@ export const listCart = () => async (dispatch, getState) => {
       },
     };
 
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_API}/api/cart`,
-      config
-    );
+    const { data } = await axios.get(`/api/cart`, config);
     dispatch({ type: CART_LIST_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
@@ -179,7 +174,7 @@ export const clearDbCart = () => async (dispatch, getState) => {
       },
     };
 
-    await axios.delete(`${process.env.REACT_APP_API}/api/cart`, config);
+    await axios.delete(`/api/cart`, config);
     dispatch({ type: DB_CART_CLEAR_SUCCESS });
   } catch (error) {
     dispatch({
@@ -207,11 +202,7 @@ export const couponApply = (coupon) => async (dispatch, getState) => {
       },
     };
 
-    await axios.post(
-      `${process.env.REACT_APP_API}/api/cart/coupon`,
-      { coupon },
-      config
-    );
+    await axios.post(`/api/cart/coupon`, { coupon }, config);
     dispatch({ type: APPLY_COUPON_SUCCESS });
   } catch (error) {
     dispatch({
@@ -238,11 +229,7 @@ export const couponCancel = () => async (dispatch, getState) => {
       },
     };
 
-    await axios.post(
-      `${process.env.REACT_APP_API}/api/cart/coupon-cancel`,
-      {},
-      config
-    );
+    await axios.post(`/api/cart/coupon-cancel`, {}, config);
     dispatch({ type: CANCEL_COUPON_SUCCESS });
   } catch (error) {
     dispatch({
@@ -267,10 +254,7 @@ export const userDbCartDelete = () => async (dispatch, getState) => {
       },
     };
 
-    await axios.delete(
-      `${process.env.REACT_APP_API}/api/cart/delete-user-cart`,
-      config
-    );
+    await axios.delete(`/api/cart/delete-user-cart`, config);
   } catch (error) {
     alert(
       error.response && error.response.data.message

@@ -1,20 +1,27 @@
-import { combineReducers, createStore, applyMiddleware } from 'redux'
-import { composeWithDevTools } from 'redux-devtools-extension'
-import thunk from 'redux-thunk'
+import { combineReducers, createStore, applyMiddleware } from "redux";
+import { composeWithDevTools } from "redux-devtools-extension";
+import thunk from "redux-thunk";
 import {
   addonCreateReducer,
   addonDeleteReducer,
   addonDetailsReducer,
   addonListReducer,
   addonUpdateReducer,
-} from './reducers/addonReducers'
+} from "./reducers/addonReducers";
 import {
   attributeCreateReducer,
   attributeDeleteReducer,
   attributeDetailsReducer,
   attributeListReducer,
   attributeUpdateReducer,
-} from './reducers/attributeReducers'
+} from "./reducers/attributeReducers";
+import {
+  currencyCreateReducer,
+  currencyDeleteReducer,
+  currencyDetailsReducer,
+  currencyListReducer,
+  currencyUpdateReducer,
+} from "./reducers/currencyReducers";
 import {
   applyCouponReducer,
   cancelCouponReducer,
@@ -22,7 +29,7 @@ import {
   cartReducer,
   cartSaveDbReducer,
   dbCartClearReducer,
-} from './reducers/cartReducers'
+} from "./reducers/cartReducers";
 import {
   categoryCreateReducer,
   categoryDeleteReducer,
@@ -32,12 +39,12 @@ import {
   categoryListReducer,
   categoryUpdateReducer,
   productGetByCategoryReducer,
-} from './reducers/categoryReducers'
+} from "./reducers/categoryReducers";
 import {
   couponCreateReducer,
   couponDeleteReducer,
   couponListReducer,
-} from './reducers/couponReducers'
+} from "./reducers/couponReducers";
 import {
   adminOrderListReducer,
   orderCreateReducer,
@@ -45,7 +52,7 @@ import {
   orderStatusUpdateReducer,
   paymentStatusUpdateReducer,
   userOrderListReducer,
-} from './reducers/orderReducers'
+} from "./reducers/orderReducers";
 import {
   fileRemoveReducer,
   fileUploadReducer,
@@ -56,22 +63,22 @@ import {
   productListAdminReducer,
   productListReducer,
   productUpdateReducer,
-} from './reducers/productReducers'
-import { stripeClientSecretReducer } from './reducers/stripeReducers'
+} from "./reducers/productReducers";
+import { stripeClientSecretReducer } from "./reducers/stripeReducers";
 import {
   userDetailsReducer,
   userListReducer,
   userLogInReducer,
   wishListReducer,
   wishReducer,
-} from './reducers/userReducers'
+} from "./reducers/userReducers";
 import {
   variableCreateReducer,
   variableDeleteReducer,
   variableDetailsReducer,
   variableListReducer,
   variableUpdateReducer,
-} from './reducers/variableReducers'
+} from "./reducers/variableReducers";
 
 const reducer = combineReducers({
   userLogIn: userLogInReducer,
@@ -100,6 +107,11 @@ const reducer = combineReducers({
   attributeDelete: attributeDeleteReducer,
   attributeDetails: attributeDetailsReducer,
   attributeUpdate: attributeUpdateReducer,
+  currencyDetails: currencyDetailsReducer,
+  currencyCreate: currencyCreateReducer,
+  currencyList: currencyListReducer,
+  currencyDelete: currencyDeleteReducer,
+  currencyUpdate: currencyUpdateReducer,
   variableCreate: variableCreateReducer,
   variableList: variableListReducer,
   variableDelete: variableDeleteReducer,
@@ -127,31 +139,31 @@ const reducer = combineReducers({
   wish: wishReducer,
   wishList: wishListReducer,
   paymentStatusUpdate: paymentStatusUpdateReducer,
-})
+});
 
-const userInfoFromStorage = localStorage.getItem('userInfo')
-  ? JSON.parse(localStorage.getItem('userInfo'))
-  : null
+const userInfoFromStorage = localStorage.getItem("userInfo")
+  ? JSON.parse(localStorage.getItem("userInfo"))
+  : null;
 
-const cartItemFromStorage = localStorage.getItem('cartItems')
-  ? JSON.parse(localStorage.getItem('cartItems'))
-  : []
+const cartItemFromStorage = localStorage.getItem("cartItems")
+  ? JSON.parse(localStorage.getItem("cartItems"))
+  : [];
 //initialStates
 const initialState = {
   cart: {
     cartItems: cartItemFromStorage,
   },
   userLogIn: { userInfo: userInfoFromStorage },
-}
+};
 
 //Middleware
-const middleware = [thunk]
+const middleware = [thunk];
 
 //Store
 const store = createStore(
   reducer,
   initialState,
   composeWithDevTools(applyMiddleware(...middleware))
-)
+);
 
-export default store
+export default store;

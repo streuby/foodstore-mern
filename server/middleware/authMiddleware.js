@@ -5,8 +5,6 @@ import { admin, serviceAccount } from "../firebase/index.js";
 
 const { auth } = pkg;
 
-const { findOne } = User;
-
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -31,7 +29,7 @@ export const protect = asyncHandler(async (req, res, next) => {
 
 export const adminCheck = asyncHandler(async (req, res, next) => {
   const { email } = req.user;
-  const adminEmail = await findOne({ email });
+  const adminEmail = await User.findOne({ email });
   if (adminEmail.role !== "admin") {
     res.status(401);
     throw new Error("Not authorized as an admin");

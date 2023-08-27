@@ -2,19 +2,17 @@ import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import Order from "../models/orderModels.js";
 
-const { find, findOneAndUpdate, findById, findOne } = User;
-
-const { find: _find } = Order;
-
 export const userList = asyncHandler(async (req, res) => {
-  const users = await find({});
+  console.log(" At Server-userList ");
+  const users = await User.find({});
   if (users) {
     res.json(users);
   }
 });
 
 export const saveShippingAddress = asyncHandler(async (req, res) => {
-  const userAddress = await findOneAndUpdate(
+  console.log(" At Server-saveShippingAddress ");
+  const userAddress = await User.findOneAndUpdate(
     { email: req.user.email },
     { shipping: req.body.shipping }
   ).exec();
@@ -24,9 +22,12 @@ export const saveShippingAddress = asyncHandler(async (req, res) => {
 });
 
 export const userDetails = asyncHandler(async (req, res) => {
+  console.log(" At Server-userDetails ");
   const userId = req.params.id;
-  const user = await findById(userId).exec();
-  const orderList = await _find({ orderdBy: userId }).sort("-createdAt").exec();
+  const user = await User.findById(userId).exec();
+  const orderList = await Order.find({ orderdBy: userId })
+    .sort("-createdAt")
+    .exec();
 
   if (orderList && user) {
     res.json({ user, orderList });
@@ -37,9 +38,10 @@ export const userDetails = asyncHandler(async (req, res) => {
 });
 
 export const addToWishlist = asyncHandler(async (req, res) => {
+  console.log(" At Server-addToWishlist ");
   const productId = req.params.id;
 
-  const user = await findOneAndUpdate(
+  const user = await User.findOneAndUpdate(
     { email: req.user.email },
     { $addToSet: { wishlist: productId } }
   ).exec();
@@ -54,8 +56,8 @@ export const addToWishlist = asyncHandler(async (req, res) => {
 
 export const removeFromWishlist = asyncHandler(async (req, res) => {
   const productId = req.params.id;
-
-  const user = await findOneAndUpdate(
+  console.log(" At Server-removeFromWishlist ");
+  const user = await User.findOneAndUpdate(
     { email: req.user.email },
     { $pull: { wishlist: productId } }
   ).exec();
@@ -69,7 +71,8 @@ export const removeFromWishlist = asyncHandler(async (req, res) => {
 });
 
 export const wishlistData = asyncHandler(async (req, res) => {
-  const list = await findOne({ email: req.user.email })
+  console.log(" At Server-wishlistData ");
+  const list = await User.findOne({ email: req.user.email })
     .select("wishlist")
     .populate({
       path: "wishlist",

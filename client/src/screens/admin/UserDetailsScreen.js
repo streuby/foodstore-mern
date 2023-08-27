@@ -5,12 +5,13 @@ import { detailsUser } from "../../actions/userActions";
 import Loader from "../../components/Loader";
 import Message from "../../components/Message";
 import OrderListTable from "../../components/OrderListTable";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const UserDetailsScreen = ({ match }) => {
-  const userId = match.params.id;
+const UserDetailsScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const params = useParams();
+  const { id: userId } = params;
 
   const userLogIn = useSelector((state) => state.userLogIn);
   const { userInfo } = userLogIn;

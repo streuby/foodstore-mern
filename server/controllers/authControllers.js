@@ -1,13 +1,11 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 
-const { findOneAndUpdate, findOne } = User;
-
 export const createOrUpdateUser = asyncHandler(async (req, res) => {
   try {
     const { name, picture, email } = req.user;
 
-    const user = await findOneAndUpdate(
+    const user = await User.findOneAndUpdate(
       { email },
       { name, picture },
       { new: true }
@@ -30,7 +28,7 @@ export const createOrUpdateUser = asyncHandler(async (req, res) => {
 
 export const currentUser = asyncHandler(async (req, res) => {
   try {
-    const user = await findOne({ email: req.user.email });
+    const user = await User.findOne({ email: req.user.email });
     if (user) {
       res.status(201).json(user);
     } else {

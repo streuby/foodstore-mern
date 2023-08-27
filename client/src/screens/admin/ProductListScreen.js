@@ -130,74 +130,75 @@ const ProductListScreen = () => {
             </tr>
           </thead>
           <tbody>
-            {productsListAdmin
-              .filter(searched(keyword))
-              .map((product, index) => (
-                <tr key={product._id}>
-                  <td>
-                    <Image
-                      src={product.image.url}
-                      rounded
-                      style={{ width: "40px" }}
-                    />
-                  </td>
-                  <td>
-                    {product.availability === "No" ? (
-                      <span style={{ color: "red", fontWeight: "800" }}>
-                        {product.title}
-                      </span>
-                    ) : (
-                      <span style={{ color: "#000", fontWeight: "600" }}>
-                        {product.title}
-                      </span>
-                    )}
-                  </td>
-                  <td>
-                    {product.delivery === "Yes" ? (
-                      <FontAwesomeIcon icon={faCheckCircle} color="green" />
-                    ) : (
-                      <FontAwesomeIcon icon={faCheckCircle} color="red" />
-                    )}
-                  </td>
-                  <td>
-                    {product.price ? (
-                      <span>${product.price}</span>
-                    ) : product.variable && product.variable.attribute ? (
-                      product.variable.attribute.map((attr) => (
-                        <span key={attr._id}>
-                          Attr: ${attr.price}
+            {productsListAdmin &&
+              productsListAdmin
+                .filter(searched(keyword))
+                .map((product, index) => (
+                  <tr key={product._id}>
+                    <td>
+                      <Image
+                        src={product.image.url}
+                        rounded
+                        style={{ width: "40px" }}
+                      />
+                    </td>
+                    <td>
+                      {product.availability === "No" ? (
+                        <span style={{ color: "red", fontWeight: "800" }}>
+                          {product.title}
+                        </span>
+                      ) : (
+                        <span style={{ color: "#000", fontWeight: "600" }}>
+                          {product.title}
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      {product.delivery === "Yes" ? (
+                        <FontAwesomeIcon icon={faCheckCircle} color="green" />
+                      ) : (
+                        <FontAwesomeIcon icon={faCheckCircle} color="red" />
+                      )}
+                    </td>
+                    <td>
+                      {product.price ? (
+                        <span>${product.price}</span>
+                      ) : product.variable && product.variable.attribute ? (
+                        product.variable.attribute.map((attr) => (
+                          <span key={attr._id}>
+                            Attr: ${attr.price}
+                            <br />
+                          </span>
+                        ))
+                      ) : (
+                        "No Price"
+                      )}
+                    </td>
+                    <td>{product.category.name}</td>
+                    <td>
+                      {product.addon.map((a) => (
+                        <span key={a._id}>
+                          {a.name}
                           <br />
                         </span>
-                      ))
-                    ) : (
-                      "No Price"
-                    )}
-                  </td>
-                  <td>{product.category.name}</td>
-                  <td>
-                    {product.addon.map((a) => (
-                      <span key={a._id}>
-                        {a.name}
-                        <br />
-                      </span>
-                    ))}
-                  </td>
-                  <td className="d-flex justify-content-around">
-                    <LinkContainer to={`/admin/product/${product.slug}/edit`}>
-                      <Button variant="dark" className="btn-sm">
-                        <FontAwesomeIcon icon={faEdit} />
+                      ))}
+                    </td>
+                    <td className="d-flex justify-content-around">
+                      <LinkContainer to={`/admin/product/${product.slug}/edit`}>
+                        <Button variant="dark" className="btn-sm">
+                          <FontAwesomeIcon icon={faEdit} />
+                        </Button>
+                      </LinkContainer>
+                      <Button
+                        variant="danger"
+                        className="btn-sm"
+                        onClick={() => deleteHandler(product._id)}
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
                       </Button>
-                    </LinkContainer>
-                    <Button
-                      variant="danger"
-                      className="btn-sm"
-                      onClick={() => deleteHandler(product._id)}
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                  </tr>
+                ))}
           </tbody>
         </Table>
         <ReactPaginate

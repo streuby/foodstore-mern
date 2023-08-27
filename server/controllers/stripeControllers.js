@@ -4,14 +4,11 @@ import User from "../models/userModel.js";
 import Stripe from "stripe";
 const stripe = Stripe(process.env.STRIPE_SECRET);
 
-const { findOne } = Cart;
-const { findOne: _findOne } = User;
-
 export const createPaymentIntent = asyncHandler(async (req, res) => {
   // 1 find user
-  const user = await _findOne({ email: req.user.email }).exec();
+  const user = await User.findOne({ email: req.user.email }).exec();
   // 2 get user cart total
-  const { cartTotal, couponApplied, totalAfterDiscount } = await findOne({
+  const { cartTotal, couponApplied, totalAfterDiscount } = await Cart.findOne({
     orderdBy: user._id,
   }).exec();
 

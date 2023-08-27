@@ -19,6 +19,7 @@ const productSchema = mongoose.Schema(
       lowercase: true,
       index: true,
     },
+    currency: [{ type: ObjectId, ref: "Currency", required: true }],
     image: {
       type: Object,
       required: true,

@@ -4,19 +4,14 @@ import Cart from "../models/cartModels.js";
 import Order from "../models/orderModels.js";
 import Product from "../models/productModel.js";
 
-const { findOne } = User;
-const { findOne: _findOne } = Cart;
-const { findById, find } = Order;
-const { bulkWrite } = Product;
-
 export const orderCreate = asyncHandler(async (req, res) => {
   const { paymentIntent, paymentMethod } = req.body;
 
-  const user = await findOne({ email: req.user.email }).exec();
+  const user = await User.findOne({ email: req.user.email }).exec();
 
   if (user) {
     const { products, cartTotal, totalAfterDiscount, couponApplied } =
-      await _findOne({ orderdBy: user._id }).exec();
+      await Cart.findOne({ orderdBy: user._id }).exec();
 
     const newOrder = await new Order({
       products,
@@ -40,7 +35,7 @@ export const orderCreate = asyncHandler(async (req, res) => {
         };
       });
 
-      await bulkWrite(bulkOption, {});
+      await Product.bulkWrite(bulkOption, {});
     } else {
       res.status(500);
       throw new Error("Can't create Order");
@@ -52,7 +47,7 @@ export const orderCreate = asyncHandler(async (req, res) => {
 });
 
 export const getOrderById = asyncHandler(async (req, res) => {
-  const order = await findById(req.params.id)
+  const order = await Order.findById(req.params.id)
     .populate("orderdBy", "name email shipping role")
     .populate("products.product", "_id title price image slug addon")
     .exec();
@@ -65,9 +60,11 @@ export const getOrderById = asyncHandler(async (req, res) => {
 });
 
 export const userOrderList = asyncHandler(async (req, res) => {
-  const user = await findOne({ email: req.user.email }).exec();
+  const user = await User.findOne({ email: req.user.email }).exec();
   if (user) {
-    const order = await find({ orderdBy: user._id }).sort("-createdAt").exec();
+    const order = await Order.find({ orderdBy: user._id })
+      .sort("-createdAt")
+      .exec();
 
     if (order) {
       res.json(order);
@@ -82,7 +79,7 @@ export const userOrderList = asyncHandler(async (req, res) => {
 });
 
 export const adminOrderList = asyncHandler(async (req, res) => {
-  const order = await find({}).sort("-createdAt").exec();
+  const order = await Order.find({}).sort("-createdAt").exec();
   if (order) {
     res.json(order);
   } else {
@@ -95,7 +92,7 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
   const orderId = req.params.id;
   const status = req.body.status;
 
-  const order = await findById(orderId).exec();
+  const order = await Order.findById(orderId).exec();
   if (order) {
     order.orderStatus = status;
     const updatedStatus = await order.save();
@@ -115,7 +112,7 @@ export const updatePaymentStatus = asyncHandler(async (req, res) => {
   const orderId = req.params.id;
   const status = req.body.status;
 
-  const order = await findById(orderId).exec();
+  const order = await Order.findById(orderId).exec();
   if (order) {
     if (order.paymentIntent) {
       order.paymentIntent.status = status;
