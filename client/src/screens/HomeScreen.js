@@ -18,6 +18,10 @@ const HomeScreen = () => {
   const wish = useSelector((state) => state.wish);
   const { loadingAdd, successAdd } = wish;
 
+  // useEffect(() => {
+  //   localStorage.removeItem("cartItems");
+  // }, []);
+
   useEffect(() => {
     if (successAdd) {
       alert.success("Product Added To Wishlist ");

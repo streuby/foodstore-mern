@@ -1,19 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { faMinus, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Image, Row, Col, ListGroup, Button, Card } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { addToCart, removeFromCart, dbSaveCart } from "../actions/cartActions";
+import {
+  addToCart,
+  removeFromCart,
+  dbSaveCart,
+  removeOneFromCart,
+  addOneToCart,
+} from "../actions/cartActions";
 import Message from "../components/Message";
 import { CART_CLEAR_ITEM, CART_DB_RESET } from "../constants/cartConstants";
 import Meta from "../components/Meta";
 const CartScreen = () => {
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [totalAddon, setTotalAddon] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const cart = useSelector((state) => state.cart);
-  const { cartItems } = cart;
+  const { cartItems, currency, error } = cart;
 
   const userLogIn = useSelector((state) => state.userLogIn);
   const { userInfo } = userLogIn;
@@ -21,34 +29,71 @@ const CartScreen = () => {
   const cartSaveDb = useSelector((state) => state.cartSaveDb);
   const { success } = cartSaveDb;
 
+  // useEffect(() => {
+  //   console.log(cartItems);
+  // }, [cartItems]);
+
+  useEffect(() => {
+    if (cartItems) {
+      const total_price = cartItems.reduce((accumulator, item) => {
+        const item_price = item.price.price * item.qty;
+
+        if (item.addonData.length > 0) {
+          const addon_price = item.addonData.reduce(
+            (addonAccumulator, addon) => {
+              return addonAccumulator + addon.prices[0].price * item.qty;
+            },
+            0
+          );
+          setTotalAddon(addon_price);
+          accumulator += item_price + addon_price;
+        } else {
+          accumulator += item_price;
+        }
+
+        return accumulator;
+      }, 0);
+      setTotalPrice(total_price);
+    }
+  }, [cartItems]);
+
   useEffect(() => {
     dispatch(addToCart());
     if (success) {
       navigate("/checkout");
       dispatch({ type: CART_DB_RESET });
       localStorage.removeItem("cartItems");
+      localStorage.removeItem("cartCurrency");
       dispatch({ type: CART_CLEAR_ITEM });
+      setTotalAddon(0);
     }
   }, [dispatch, navigate, success]);
+
+  useEffect(() => {
+    if (cartItems.length === 0) {
+      setTotalAddon(0);
+    }
+  }, [cartItems.length]);
 
   const removeItemHandler = (slug) => {
     dispatch(removeFromCart(slug));
   };
   const checkOutHandler = () => {
-    dispatch(dbSaveCart(cartItems));
+    dispatch(dbSaveCart(cartItems, totalPrice, currency));
   };
   return (
     <>
       <Meta title="Food Store | Cart" />
       <Row>
         <Col md={9}>
+          {error && <Message variant={"info"}>{error}</Message>}
           {cartItems.length === 0 ? (
             <Message variant={"info"}>
               Your cart is empty! <Link to="/">Go Back</Link>
             </Message>
           ) : (
             <ListGroup variant="flush">
-              {cartItems.map((item) => (
+              {cartItems.map((item, index) => (
                 <ListGroup.Item
                   key={item.product}
                   style={{ backgroundColor: "#dfe6e9" }}
@@ -68,7 +113,7 @@ const CartScreen = () => {
                       >
                         {item.title}
                       </Link>
-                      {item.variableData && (
+                      {"name" in item.variableData && (
                         <p
                           style={{
                             backgroundColor: "#b2bec3",
@@ -85,7 +130,7 @@ const CartScreen = () => {
                         </p>
                       )}
 
-                      {item.addonData && (
+                      {item.addonData.length > 0 && (
                         <div
                           style={{
                             backgroundColor: "#b2bec3",
@@ -98,16 +143,16 @@ const CartScreen = () => {
                             <span style={{ fontWeight: "500" }}>Addon:</span>
                           </div>
                           <div>
-                            {item.addonData.map((adn) => (
+                            {item.addonData.map(({ name, prices, value }) => (
                               <p
                                 style={{
                                   color: "#000",
                                   fontSize: "13px",
                                   margin: "0px",
                                 }}
-                                key={adn._id}
+                                key={value}
                               >
-                                {adn.name} x {item.qty && item.qty}
+                                {name} x {item.qty && item.qty}
                               </p>
                             ))}
                           </div>
@@ -120,7 +165,15 @@ const CartScreen = () => {
                                 margin: "0px",
                               }}
                             >
-                              Total Addon Price: ${item.addonPrice * item.qty}
+                              Total Addon Price: {item.price.currencySymbol}
+                              {item.addonData.reduce((acc, item) => {
+                                return (
+                                  acc +
+                                  item.prices.reduce((priceAcc, priceItem) => {
+                                    return priceAcc + priceItem.price;
+                                  }, 0)
+                                );
+                              }, 0) * item.qty}
                             </p>
                           </div>
                         </div>
@@ -128,23 +181,13 @@ const CartScreen = () => {
                     </Col>
                     <Col md={2}>
                       <p style={{ fontWeight: "600" }}>
-                        ${item.price * item.qty}
+                        {item.price.currencySymbol}
+                        {item.price.price * item.qty}
                       </p>
                     </Col>
                     <Col md={3} className="d-flex flex-row align-items-start">
                       <Button
-                        onClick={() =>
-                          dispatch(
-                            addToCart(
-                              item.slug,
-                              item.qty - 1,
-                              item.variableData && item.variableData._id,
-                              !item.addonData
-                                ? null
-                                : item.addonData.map((adn) => adn._id)
-                            )
-                          )
-                        }
+                        onClick={() => dispatch(removeOneFromCart(index))}
                         disabled={item.qty < 2}
                       >
                         <FontAwesomeIcon icon={faMinus} />
@@ -160,18 +203,7 @@ const CartScreen = () => {
                         {item.qty && item.qty}
                       </span>
                       <Button
-                        onClick={() =>
-                          dispatch(
-                            addToCart(
-                              item.slug,
-                              item.qty + 1,
-                              item.variableData && item.variableData._id,
-                              !item.addonData
-                                ? null
-                                : item.addonData.map((adn) => adn._id)
-                            )
-                          )
-                        }
+                        onClick={() => dispatch(addOneToCart(index))}
                         disabled={item.qty > 49}
                       >
                         <FontAwesomeIcon icon={faPlus} />
@@ -198,24 +230,19 @@ const CartScreen = () => {
           <Card style={{ backgroundColor: "#DFE6E9" }}>
             <ListGroup variant="flush">
               <ListGroup.Item>
+                {"currency" in currency &&
+                  `Currency: ${currency.currency}-${currency.currencySymbol}`}
+              </ListGroup.Item>
+              <ListGroup.Item>
                 Total: ({cartItems.reduce((acc, item) => acc + item.qty, 0)})
                 Items
               </ListGroup.Item>
               <ListGroup.Item>
-                Total Addon Price (${" "}
-                {cartItems.reduce(
-                  (acc, item) => acc + item.addonPriceWithQty,
-                  0
-                )}
-                )
+                Total Addon Price ({currency && currency.currencySymbol}{" "}
+                {totalAddon})
               </ListGroup.Item>
               <ListGroup.Item>
-                Total (${" "}
-                {cartItems.reduce(
-                  (acc, item) => acc + item.qty * item.price,
-                  0
-                )}
-                )
+                Total ({currency && currency.currencySymbol} {totalPrice})
               </ListGroup.Item>
               <ListGroup.Item>
                 {userInfo ? (
@@ -223,7 +250,7 @@ const CartScreen = () => {
                     variant="success"
                     style={{ width: "-webkit-fill-available" }}
                     onClick={checkOutHandler}
-                    disabled={!cartItems.length}
+                    disabled={!cartItems.length > 0}
                   >
                     Proceed To CheckOut
                   </Button>

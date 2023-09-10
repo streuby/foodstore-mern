@@ -148,10 +148,16 @@ const userInfoFromStorage = localStorage.getItem("userInfo")
 const cartItemFromStorage = localStorage.getItem("cartItems")
   ? JSON.parse(localStorage.getItem("cartItems"))
   : [];
+
+const cartCurrency = localStorage.getItem("cartCurrency")
+  ? JSON.parse(localStorage.getItem("cartCurrency"))
+  : {};
 //initialStates
 const initialState = {
   cart: {
     cartItems: cartItemFromStorage,
+    currency: cartCurrency,
+    error: "",
   },
   userLogIn: { userInfo: userInfoFromStorage },
 };

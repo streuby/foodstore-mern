@@ -17,10 +17,12 @@ import {
   DB_CART_CLEAR_FAIL,
   DB_CART_CLEAR_REQUEST,
   DB_CART_CLEAR_SUCCESS,
+  CART_REMOVE_ONE,
+  CART_ADD_ONE,
 } from "../constants/cartConstants";
 
 export const addToCart =
-  (slug, qty, variable = null, addonPd = null) =>
+  (slug, price, qty, variable = null, addonPd = null) =>
   async (dispatch, getState) => {
     if (slug || qty || variable || addonPd) {
       const { data } = await axios.get(`/api/product/${slug}`);
@@ -33,60 +35,10 @@ export const addToCart =
           title: data.title,
           image: data.image.url,
           qty,
-          variableData:
-            data.variable &&
-            data.variable.attribute.find((pv) => pv._id === variable),
+          variableData: variable,
 
-          addonData:
-            data.addon.length && addonPd
-              ? data.addon.filter(
-                  (adn) => addonPd && addonPd.find((add) => add === adn._id)
-                )
-              : null,
-          price:
-            data.price &&
-            (data.addon.filter(
-              (adn) => addonPd && addonPd.find((add) => add === adn._id)
-            ).length === 0 ||
-              !data.addon.filter(
-                (adn) => addonPd && addonPd.find((add) => add === adn._id)
-              ))
-              ? data.price
-              : data.variable && (data.addon.length === 0 || !data.addon)
-              ? data.variable.attribute.find((pv) => pv._id === variable).price
-              : data.price &&
-                data.addon.filter(
-                  (adn) => addonPd && addonPd.find((add) => add === adn._id)
-                ).length > 0
-              ? data.price +
-                data.addon
-                  .filter(
-                    (adn) => addonPd && addonPd.find((add) => add === adn._id)
-                  )
-                  .reduce((acc, item) => acc + item.price, 0)
-              : data.variable && data.addon.length > 0
-              ? data.variable.attribute.find((pv) => pv._id === variable)
-                  .price +
-                data.addon
-                  .filter(
-                    (adn) => addonPd && addonPd.find((add) => add === adn._id)
-                  )
-                  .reduce((acc, item) => acc + item.price, 0)
-              : null,
-          addonPriceWithQty:
-            data.addon.length > 0 &&
-            data.addon
-              .filter(
-                (adn) => addonPd && addonPd.find((add) => add === adn._id)
-              )
-              .reduce((acc, item) => acc + item.price, 0) * qty,
-          addonPrice:
-            data.addon.length > 0 &&
-            data.addon
-              .filter(
-                (adn) => addonPd && addonPd.find((add) => add === adn._id)
-              )
-              .reduce((acc, item) => acc + item.price, 0),
+          addonData: addonPd,
+          price: price,
         },
       });
     }
@@ -97,6 +49,14 @@ export const addToCart =
     );
   };
 
+export const addOneToCart = (index) => (dispatch, getState) => {
+  dispatch({
+    type: CART_ADD_ONE,
+    payload: index,
+  });
+  localStorage.setItem("cartItems", JSON.stringify(getState().cart.cartItems));
+};
+
 export const removeFromCart = (slug) => (dispatch, getState) => {
   dispatch({
     type: CART_REMOVE_ITEM,
@@ -105,33 +65,46 @@ export const removeFromCart = (slug) => (dispatch, getState) => {
   localStorage.setItem("cartItems", JSON.stringify(getState().cart.cartItems));
 };
 
-export const dbSaveCart = (cart) => async (dispatch, getState) => {
-  try {
-    dispatch({ type: CART_DB_REQUEST });
-
-    const {
-      userLogIn: { userInfo },
-    } = getState();
-
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.token}`,
-      },
-    };
-
-    await axios.post(`/api/cart`, { cart }, config);
-    dispatch({ type: CART_DB_SUCCESS });
-  } catch (error) {
-    dispatch({
-      type: CART_DB_FAIL,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
-    });
-  }
+export const removeOneFromCart = (index) => (dispatch, getState) => {
+  dispatch({
+    type: CART_REMOVE_ONE,
+    payload: index,
+  });
+  localStorage.setItem("cartItems", JSON.stringify(getState().cart.cartItems));
 };
+
+export const dbSaveCart =
+  (cartItems, totalPrice, currency) => async (dispatch, getState) => {
+    try {
+      dispatch({ type: CART_DB_REQUEST });
+
+      const {
+        userLogIn: { userInfo },
+      } = getState();
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+
+      await axios.post(
+        `/api/cart`,
+        { cartItems, totalPrice, currency },
+        config
+      );
+      dispatch({ type: CART_DB_SUCCESS });
+    } catch (error) {
+      dispatch({
+        type: CART_DB_FAIL,
+        payload:
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+      });
+    }
+  };
 
 export const listCart = () => async (dispatch, getState) => {
   try {

@@ -14,12 +14,14 @@ import Loader from "../../components/Loader";
 import Message from "../../components/Message";
 import ItemSearch from "../../components/ItemSearch";
 import { useNavigate } from "react-router-dom";
+import CurrencySelect from "../../components/form/CurrencySelect";
+import { listCurrency } from "../../actions/currencyActions";
 const AttributeScreen = () => {
   const [attribute, setAttribute] = useState("");
-  const [price, setPrice] = useState("");
   const [product, setProduct] = useState("");
-
+  const [prices, setPrices] = useState({});
   const [keyword, setKeyword] = useState("");
+  const [selectedCurrencies, setSelectedCurrencies] = useState([]);
 
   const navigate = useNavigate();
 
@@ -47,9 +49,9 @@ const AttributeScreen = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    dispatch(createAttribute(attribute, price, product));
+    dispatch(createAttribute(attribute, prices, product));
     setAttribute("");
-    setPrice("");
+    setPrices({});
     setProduct("");
   };
   const searched = (keyword) => (attribute) =>
@@ -66,7 +68,12 @@ const AttributeScreen = () => {
       navigate("/");
     }
     dispatch(listAttribute());
+    dispatch(listCurrency());
   }, [dispatch, userInfo, success, successDelete, navigate]);
+
+  const updatePrices = (key, symbol, value) => {
+    setPrices({ ...prices, [key]: parseInt(value) });
+  };
 
   return (
     <>
@@ -83,16 +90,27 @@ const AttributeScreen = () => {
               onChange={(e) => setAttribute(e.target.value)}
             ></Form.Control>
           </Form.Group>
-          <Form.Group controlId="price">
-            <Form.Label>Price</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Enter price($)"
-              value={price}
-              required
-              onChange={(e) => setPrice(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
+          <CurrencySelect
+            selectedCurrencies={selectedCurrencies}
+            setSelectedCurrencies={setSelectedCurrencies}
+            multiselect={true}
+          />
+          {selectedCurrencies.length > 0 &&
+            selectedCurrencies.map((item) => (
+              <Form.Group controlId="price">
+                <Form.Label>{`${item.name} Price`}</Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder={`Enter ${item.name} price`}
+                  value={item.isocode in prices && prices[item.isocode]}
+                  required
+                  onChange={(e) =>
+                    updatePrices(item.isocode, item.symbol, e.target.value)
+                  }
+                ></Form.Control>
+              </Form.Group>
+            ))}
+
           <Form.Group controlId="product">
             <Form.Label>Product Name</Form.Label>
             <Form.Control
@@ -140,7 +158,12 @@ const AttributeScreen = () => {
                 {attributes.filter(searched(keyword)).map((attribute) => (
                   <tr key={attribute._id}>
                     <td>{attribute.name}</td>
-                    <td>${attribute.price}</td>
+                    <td>
+                      {attribute.prices.map(
+                        ({ price, currencySymbol }) =>
+                          `${currencySymbol}${price} `
+                      )}
+                    </td>
                     <td>{attribute.product}</td>
                     <td>
                       <LinkContainer

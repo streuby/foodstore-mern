@@ -18,7 +18,7 @@ import {
 } from "../constants/attributeConstants";
 
 export const createAttribute =
-  (attribute, price, product) => async (dispatch, getState) => {
+  (attribute, prices, product) => async (dispatch, getState) => {
     try {
       dispatch({ type: ATTRIBUTE_CREATE_REQUEST });
       const {
@@ -33,7 +33,7 @@ export const createAttribute =
       };
       await axios.post(
         `/api/attribute`,
-        { name: attribute, price, product },
+        { name: attribute, prices, product },
         config
       );
 
@@ -123,7 +123,8 @@ export const detailsAttribute = (id) => async (dispatch) => {
 };
 
 export const updateAttribute =
-  (newAttribute, price, product, attributeId) => async (dispatch, getState) => {
+  (newAttribute, prices, product, attributeId) =>
+  async (dispatch, getState) => {
     try {
       dispatch({ type: ATTRIBUTE_UPDATE_REQUEST });
 
@@ -140,7 +141,7 @@ export const updateAttribute =
 
       await axios.put(
         `/api/attribute/${attributeId}`,
-        { name: newAttribute, price, product },
+        { name: newAttribute, prices, product },
         config
       );
 

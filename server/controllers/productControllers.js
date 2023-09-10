@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import Product from "../models/productModel.js";
 import slugify from "slugify";
 import cloudinary from "../config/cloudinary.js";
+import Currency from "../models/currencyModel.js";
 
 export const uploadImage = asyncHandler(async (req, res) => {
   const result = await cloudinary.v2.uploader.upload(req.body.image, {
@@ -29,9 +30,10 @@ export const removeImage = asyncHandler(async (req, res) => {
 });
 
 export const productCreate = asyncHandler(async (req, res) => {
+  const currencies = await Currency.find({});
   const {
     title,
-    price,
+    prices,
     image,
     category,
     variable,
@@ -43,6 +45,16 @@ export const productCreate = asyncHandler(async (req, res) => {
     availability,
   } = req.body;
 
+  const currencyArr = currency.map(({ value }) => value);
+
+  const pricesObj = Object.entries(prices).map(([currency, price]) => ({
+    price: price,
+    currencySymbol: currencies
+      .map(({ isocode, symbol }) => isocode === currency && symbol)
+      .filter((element) => element !== false)[0],
+    currency: currency,
+  }));
+
   const productExist = await Product.findOne({ slug: slugify(title) });
 
   if (productExist) {
@@ -53,10 +65,10 @@ export const productCreate = asyncHandler(async (req, res) => {
       user: req.user.name,
       title,
       slug: slugify(title),
-      price,
+      prices: pricesObj,
       image,
       variable,
-      currency,
+      currency: currencyArr,
       category,
       addon,
       sold,
@@ -89,7 +101,7 @@ export const getProducts = asyncHandler(async (req, res) => {
 });
 
 export const deleteProducts = asyncHandler(async (req, res) => {
-  const product = await Product.find(req.params.id);
+  const product = await Product.findOne({ _id: req.params.id });
   if (product) {
     await cloudinary.v2.uploader.destroy(product.image.public_id);
     await product.remove();
@@ -105,7 +117,7 @@ export const deleteProducts = asyncHandler(async (req, res) => {
 export const getProductDetails = asyncHandler(async (req, res) => {
   const product = await Product.findOne({ slug: req.params.slug })
     .populate("category", "name slug")
-    .populate("addon", "name price slug")
+    .populate("addon", "name prices slug")
     .populate({
       path: "variable",
       populate: { path: "attribute" },
@@ -119,10 +131,11 @@ export const getProductDetails = asyncHandler(async (req, res) => {
 });
 
 export const updateProduct = asyncHandler(async (req, res) => {
+  const currencies = await Currency.find({});
   const product = await Product.findOne({ slug: req.params.slug });
   const {
     title,
-    price,
+    prices,
     variable,
     currency,
     image,
@@ -134,10 +147,18 @@ export const updateProduct = asyncHandler(async (req, res) => {
     availability,
   } = req.body;
 
+  const pricesObj = Object.entries(prices).map(([currency, price]) => ({
+    price: price,
+    currencySymbol: currencies
+      .map(({ isocode, symbol }) => isocode === currency && symbol)
+      .filter((element) => element !== false)[0],
+    currency: currency,
+  }));
+
   if (product) {
     product.title = title;
     product.slug = slugify(title);
-    product.price = price;
+    product.prices = pricesObj;
     product.variable = variable;
     product.currency = currency;
     product.image = image;

@@ -21,7 +21,7 @@ import { MultiSelect } from "react-multi-select-component";
 const ProductEditScreen = () => {
   const alert = useAlert();
   const [title, setTitle] = useState("");
-  const [price, setPrice] = useState("");
+  const [prices, setPrices] = useState({});
   const [variable, setVariable] = useState();
   const [image, setImage] = useState({});
   const [category, setCategory] = useState("");
@@ -77,7 +77,12 @@ const ProductEditScreen = () => {
           dispatch(listAddon());
         } else {
           setTitle(product.title);
-          setPrice(product.price);
+          setPrices(
+            product.prices.reduce((result, item) => {
+              result[item.currency] = item.price;
+              return result;
+            }, {})
+          );
           if (product.variable && product.variable._id) {
             setVariable(product.variable._id);
           }
@@ -117,7 +122,7 @@ const ProductEditScreen = () => {
       updateProduct({
         slug: productSlug,
         title,
-        price,
+        prices,
         variable,
         image,
         category,
@@ -128,6 +133,10 @@ const ProductEditScreen = () => {
         availability,
       })
     );
+  };
+
+  const updatePrices = (key, value) => {
+    setPrices({ ...prices, [key]: parseInt(value) });
   };
   return (
     <>
@@ -155,17 +164,21 @@ const ProductEditScreen = () => {
               onChange={(e) => setTitle(e.target.value)}
             ></Form.Control>
           </Form.Group>
-          {price ? (
-            <Form.Group controlId="price">
-              <Form.Label>Price</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Enter price"
-                value={price}
-                required
-                onChange={(e) => setPrice(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+          {product.prices ? (
+            product.prices.map((item) => (
+              <Form.Group controlId="price">
+                <Form.Label>{` Price - ${item.currencySymbol}`}</Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder={`Enter ${item.currencySymbol} price`}
+                  value={
+                    (item.currency in prices && prices[item.currency]) || ""
+                  }
+                  required
+                  onChange={(e) => updatePrices(item.currency, e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+            ))
           ) : variable ? (
             <Form.Group controlId="variable">
               <Form.Label>Variable</Form.Label>

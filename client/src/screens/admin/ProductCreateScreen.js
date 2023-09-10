@@ -24,7 +24,7 @@ const ProductCreateScreen = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [title, setTitle] = useState("");
   const [productType, setProductType] = useState("simple");
-  const [price, setPrice] = useState("");
+  const [prices, setPrices] = useState({});
   const [variable, setVariable] = useState();
   const [image, setImage] = useState({});
   const [category, setCategory] = useState("");
@@ -68,7 +68,7 @@ const ProductCreateScreen = () => {
       if (success) {
         alert.success("Product Created");
         setTitle("");
-        setPrice("");
+        setPrices({});
         setVariable();
         setProductType("simple");
         setImage({});
@@ -87,13 +87,17 @@ const ProductCreateScreen = () => {
     }
   }, [dispatch, success, alert, userInfo, navigate]);
 
+  useEffect(() => {
+    setPrices({});
+  }, [selectedCurrencies]);
+
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(
       createProduct({
         image,
         title,
-        price,
+        prices,
         variable,
         category,
         currency: selectedCurrencies,
@@ -123,6 +127,10 @@ const ProductCreateScreen = () => {
         "base64"
       );
     }
+  };
+
+  const updatePrices = (key, symbol, value) => {
+    setPrices({ ...prices, [key]: parseInt(value) });
   };
   return (
     <>
@@ -178,24 +186,55 @@ const ProductCreateScreen = () => {
               options={currencies.map((a) => ({
                 label: `${a.name} - ${a.symbol}`,
                 value: a._id,
+                symbol: a.symbol,
+                isocode: a.isocode,
+                name: a.name,
               }))}
               value={selectedCurrencies}
               onChange={setSelectedCurrencies}
-              labelledBy="Select Attributes"
-              className="product-attributes"
+              labelledBy="Select Currencies"
+              className="product-currencies"
             />
           </Form.Group>
           {productType === "simple" ? (
-            <Form.Group controlId="price">
-              <Form.Label>Price</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Enter price"
-                value={price}
-                required
-                onChange={(e) => setPrice(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+            selectedCurrencies.length > 1 ? (
+              selectedCurrencies.map((item) => (
+                <Form.Group controlId="price">
+                  <Form.Label>{`${item.name} Price`}</Form.Label>
+                  <Form.Control
+                    type="number"
+                    placeholder={`Enter ${item.name} price`}
+                    value={item.isocode in prices && prices[item.isocode]}
+                    required
+                    onChange={(e) =>
+                      updatePrices(item.isocode, item.symbol, e.target.value)
+                    }
+                  ></Form.Control>
+                </Form.Group>
+              ))
+            ) : (
+              selectedCurrencies.length === 1 && (
+                <Form.Group controlId="price">
+                  <Form.Label>Price</Form.Label>
+                  <Form.Control
+                    type="number"
+                    placeholder="Enter price"
+                    value={
+                      selectedCurrencies.length > 0 &&
+                      prices[selectedCurrencies[0].isocode]
+                    }
+                    required
+                    onChange={(e) =>
+                      updatePrices(
+                        selectedCurrencies[0].isocode,
+                        selectedCurrencies[0].symbol,
+                        e.target.value
+                      )
+                    }
+                  ></Form.Control>
+                </Form.Group>
+              )
+            )
           ) : (
             <Form.Group controlId="variable">
               <Form.Label>Variable</Form.Label>

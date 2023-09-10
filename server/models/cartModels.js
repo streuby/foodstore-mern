@@ -8,16 +8,19 @@ const CartSchema = mongoose.Schema(
           type: ObjectId,
           ref: "Product",
         },
-        price: Number,
-        quantity: Number,
+        slug: { type: String },
+        image: { type: String },
+        qty: Number,
+        price: Object,
         variableData: Object,
-        addon: [
+        addonData: [
           {
             type: Object,
           },
         ],
       },
     ],
+    currency: Object,
     cartTotal: Number,
     totalAfterDiscount: Number,
     couponApplied: {

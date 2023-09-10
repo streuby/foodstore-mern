@@ -51,11 +51,17 @@ const productSchema = mongoose.Schema(
       enum: ["Yes", "No"],
       required: true,
     },
-    price: {
-      type: Number,
-      default: 0,
-      trim: true,
-    },
+    prices: [
+      {
+        price: {
+          type: Number,
+          default: 0,
+          trim: true,
+        },
+        currencySymbol: { type: String, required: true, maxlength: 1 },
+        currency: { type: String, required: true },
+      },
+    ],
     variable: {
       type: ObjectId,
       ref: "Variable",

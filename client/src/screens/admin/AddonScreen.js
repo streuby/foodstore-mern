@@ -13,12 +13,16 @@ import {
 import Loader from "../../components/Loader";
 import Message from "../../components/Message";
 import ItemSearch from "../../components/ItemSearch";
+import CurrencySelect from "../../components/form/CurrencySelect";
 import { useNavigate } from "react-router-dom";
+import { listCurrency } from "../../actions/currencyActions";
 
 const AddonScreen = () => {
   const [addon, setAddon] = useState("");
   const [price, setPrice] = useState("");
   const [keyword, setKeyword] = useState("");
+  const [prices, setPrices] = useState({});
+  const [selectedCurrencies, setSelectedCurrencies] = useState([]);
 
   const navigate = useNavigate;
 
@@ -42,7 +46,7 @@ const AddonScreen = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    dispatch(createAddon(addon, price));
+    dispatch(createAddon(addon, prices));
     setAddon("");
     setPrice("");
   };
@@ -60,7 +64,16 @@ const AddonScreen = () => {
       navigate("/");
     }
     dispatch(listAddon());
+    dispatch(listCurrency());
   }, [dispatch, userInfo, success, successDelete, navigate]);
+
+  useEffect(() => {
+    console.log(prices);
+  }, [prices]);
+
+  const updatePrices = (key, symbol, value) => {
+    setPrices({ [key]: parseInt(value) });
+  };
 
   return (
     <>
@@ -77,16 +90,32 @@ const AddonScreen = () => {
               onChange={(e) => setAddon(e.target.value)}
             ></Form.Control>
           </Form.Group>
-          <Form.Group controlId="price">
-            <Form.Label>Price</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Enter price($)"
-              value={price}
-              required
-              onChange={(e) => setPrice(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
+          <CurrencySelect
+            selectedCurrencies={selectedCurrencies}
+            setSelectedCurrencies={setSelectedCurrencies}
+            multiselect={false}
+          />
+          {selectedCurrencies.name && (
+            <Form.Group controlId="price">
+              <Form.Label>{`${selectedCurrencies.name} Price`}</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder={`Enter ${selectedCurrencies.name} price`}
+                value={
+                  selectedCurrencies.isocode in prices &&
+                  prices[selectedCurrencies.isocode]
+                }
+                required
+                onChange={(e) =>
+                  updatePrices(
+                    selectedCurrencies.isocode,
+                    selectedCurrencies.symbol,
+                    e.target.value
+                  )
+                }
+              ></Form.Control>
+            </Form.Group>
+          )}
           <Button
             type="submit"
             variant="primary"
@@ -126,7 +155,7 @@ const AddonScreen = () => {
                   <tr key={addon._id}>
                     <td>{addon.name}</td>
                     <td>{addon.slug}</td>
-                    <td>${addon.price}</td>
+                    <td>{`${addon.prices[0].currencySymbol}${addon.prices[0].price}`}</td>
                     <td>
                       <LinkContainer to={`/admin/addon/${addon.slug}/edit`}>
                         <Button variant="dark" className="btn-sm">

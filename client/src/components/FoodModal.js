@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Modal, Image, Row, Col, ListGroup } from "react-bootstrap";
+import Tab from "react-bootstrap/Tab";
+import Tabs from "react-bootstrap/Tabs";
+import Form from "react-bootstrap/Form";
 import { Link } from "react-router-dom";
 import { MultiSelect } from "react-multi-select-component";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faCartPlus,
   faHeart,
   faMinus,
   faPlus,
@@ -26,21 +30,61 @@ const FoodModal = ({
   loadingAdd,
 }) => {
   const [counter, setCounter] = useState(1);
-  const [variable, setVariable] = useState("");
+  const [variable, setVariable] = useState({});
   const [addon, setAddon] = useState([]);
+  const [price, setPrice] = useState({
+    type: "",
+    name: "",
+    price: 0,
+    currencySymbol: "",
+    currency: "",
+    _id: "",
+  });
+  const [selectedPrice, setSetselectedPrice] = useState("");
   const dispatch = useDispatch();
 
-  const handleAddToCart = () => {
-    dispatch(
-      addToCart(
-        product.slug,
-        counter,
-        variable,
-        addon.length < 1 ? null : addon.map((adn) => adn.value)
-      )
+  useEffect(() => {
+    const setVariables = () => {
+      switch (price.type) {
+        case "simple":
+          setSetselectedPrice(price.currencySymbol);
+          break;
+
+        case "variable":
+          setVariable({
+            name: price.name,
+            price: price.price,
+            currencySymbol: price.currencySymbol,
+            currency: price.currency,
+            _id: price._id,
+          });
+          break;
+        default:
+          break;
+      }
+    };
+
+    setVariables();
+  }, [price]);
+
+  useEffect(() => {
+    // eslint-disable-next-line array-callback-return
+    addon.map((item) =>
+      // eslint-disable-next-line array-callback-return
+      item.prices.map((_item) => {
+        if (_item.currency !== price.currency) {
+          setAddon([]);
+        }
+      })
     );
+  }, [addon, price.currency]);
+
+  const handleAddToCart = () => {
+    dispatch(addToCart(product.slug, price, counter, variable, addon));
+    //console.log({ slug: product.slug, price, qry: counter, variable, addon });
     setModalShow(false);
   };
+
   function MyVerticallyCenteredModal(props) {
     return (
       <Modal {...props} size="xl" centered>
@@ -130,8 +174,38 @@ const FoodModal = ({
                     </ListGroup.Item>
                     <ListGroup.Item style={{ backgroundColor: "transparent" }}>
                       {product.variable && <h4>Choose from bellow: </h4>}
-                      {product.price ? (
-                        <h5>Price: {product.price}</h5>
+                      {product.prices && product.prices.length > 0 ? (
+                        <Tabs defaultActiveKey="NGN" id="tab" className="mb-3">
+                          {product.prices.map(
+                            ({ price, currencySymbol, currency, _id }) => (
+                              <Tab eventKey={currencySymbol} title={currency}>
+                                <Form.Check type="checkbox" id={`${_id}`}>
+                                  <Form.Check.Input
+                                    type="checkbox"
+                                    value={currencySymbol}
+                                    checked={selectedPrice === currencySymbol}
+                                    onChange={(e) => {
+                                      setPrice({
+                                        type: "simple",
+                                        price: price,
+                                        currencySymbol: currencySymbol,
+                                        currency: currency,
+                                        _id: _id,
+                                      });
+                                    }}
+                                    isValid
+                                  />
+                                  <Form.Check.Label>
+                                    <p>{`${currencySymbol} ${price}`}</p>
+                                  </Form.Check.Label>
+                                  <Form.Control.Feedback type="valid">
+                                    Check to select price
+                                  </Form.Control.Feedback>
+                                </Form.Check>
+                              </Tab>
+                            )
+                          )}
+                        </Tabs>
                       ) : product.variable ? (
                         product.variable.attribute.map((attr) => (
                           <div key={attr._id}>
@@ -149,16 +223,41 @@ const FoodModal = ({
                                       margin: "0px 5px",
                                     }}
                                   ></Image>
-                                  <input
-                                    type="radio"
-                                    name="variable"
-                                    value={attr._id}
-                                    id={attr._id}
-                                    onClick={() => setVariable(attr._id)}
-                                  />
-                                  <p style={{ margin: "0px" }}>
-                                    {attr.name} - ${attr.price}
-                                  </p>
+                                  {attr.prices.length > 0 &&
+                                    attr.prices.map(
+                                      ({
+                                        price,
+                                        currencySymbol,
+                                        currency,
+                                        _id,
+                                      }) => (
+                                        <>
+                                          {" [ "}
+                                          <input
+                                            type="radio"
+                                            name="variable"
+                                            value={_id}
+                                            id={_id}
+                                            checked={variable._id === _id}
+                                            onClick={(e) => {
+                                              setPrice({
+                                                type: "variable",
+                                                name: attr.name,
+                                                price: price,
+                                                currencySymbol: currencySymbol,
+                                                currency: currency,
+                                                _id: _id,
+                                              });
+                                            }}
+                                          />
+                                          <p style={{ margin: "0px" }}>
+                                            {attr.name} - {currencySymbol}
+                                            {price}
+                                          </p>
+                                          {" ] "}
+                                        </>
+                                      )
+                                    )}
                                 </Col>
                               </label>
                             </Row>
@@ -169,22 +268,52 @@ const FoodModal = ({
                         "No Price Given"
                       )}
                     </ListGroup.Item>
-                    <ListGroup.Item style={{ backgroundColor: "transparent" }}>
-                      {product.addon && product.addon.length > 0 ? (
-                        <MultiSelect
-                          options={product.addon.map((a) => ({
-                            label: a.name,
-                            value: a._id,
-                          }))}
-                          value={addon}
-                          onChange={setAddon}
-                          labelledBy="Select Addon"
-                          className="product-addons"
-                        />
-                      ) : (
-                        ""
+                    {product.addon &&
+                      product.addon.length > 0 &&
+                      price.price !== 0 && (
+                        <ListGroup.Item
+                          style={{ backgroundColor: "transparent" }}
+                        >
+                          <MultiSelect
+                            options={product.addon
+                              .map((a) => ({
+                                label: `${a.name}-${a.prices[0].currencySymbol}${a.prices[0].price}`,
+                                value: a._id,
+                                prices: a.prices,
+                                name: a.name,
+                              }))
+                              .filter(
+                                (a) => a.prices[0].currency === price.currency
+                              )}
+                            value={addon}
+                            onChange={setAddon}
+                            labelledBy="Select Addon"
+                            className="product-addons"
+                          />
+                        </ListGroup.Item>
                       )}
-                    </ListGroup.Item>
+                    {price.price > 0 && (
+                      <ListGroup.Item
+                        style={{ backgroundColor: "transparent" }}
+                      >
+                        <p>
+                          <h4>
+                            You will be billed {price.currencySymbol}
+                            {price.price * counter +
+                              addon.reduce((total, item) => {
+                                const currencyPrices = item.prices.filter(
+                                  (_price) => _price.currency === price.currency
+                                );
+                                const sum = currencyPrices.reduce(
+                                  (acc, __price) => acc + __price.price,
+                                  0
+                                );
+                                return (total + sum) * counter;
+                              }, 0)}
+                          </h4>
+                        </p>
+                      </ListGroup.Item>
+                    )}
                     {product.availability === "Yes" ? (
                       <ListGroup.Item
                         style={{ backgroundColor: "transparent" }}
@@ -219,9 +348,9 @@ const FoodModal = ({
                               style={{ width: "-webkit-fill-available" }}
                               variant="dark"
                               onClick={handleAddToCart}
-                              disabled={product.variable && !variable}
+                              disabled={price.type === ""}
                             >
-                              Add To Cart
+                              Add To Cart <FontAwesomeIcon icon={faCartPlus} />
                             </Button>
                           </Col>
                         </Row>

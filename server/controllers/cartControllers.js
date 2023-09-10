@@ -4,9 +4,7 @@ import Cart from "../models/cartModels.js";
 import Coupon from "../models/couponModels.js";
 
 export const dbCart = asyncHandler(async (req, res) => {
-  const { cart } = req.body;
-
-  let products = [];
+  const { cartItems, totalPrice, currency } = req.body;
 
   const user = await User.findOne({ email: req.user.email }).exec();
   // check if cart with logged in user id already exist
@@ -16,27 +14,10 @@ export const dbCart = asyncHandler(async (req, res) => {
     cartExistByThisUser.remove();
   }
 
-  for (let i = 0; i < cart.length; i++) {
-    let object = {};
-
-    object.product = cart[i].product;
-    object.quantity = cart[i].qty;
-
-    object.variableData = cart[i].variableData;
-
-    object.addon = cart[i].addonData;
-    // get price for creating total
-
-    object.price = cart[i].price;
-    products.push(object);
-  }
-  let cartTotal = 0;
-  for (let i = 0; i < products.length; i++) {
-    cartTotal = cartTotal + products[i].price * products[i].quantity;
-  }
   const newCart = await new Cart({
-    products,
-    cartTotal,
+    products: cartItems,
+    currency,
+    cartTotal: totalPrice,
     orderdBy: user._id,
   }).save();
   res.json(newCart);

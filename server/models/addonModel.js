@@ -14,11 +14,17 @@ const AddonSchema = mongoose.Schema(
       lowercase: true,
       index: true,
     },
-    price: {
-      type: Number,
-      trim: true,
-      require: true,
-    },
+    prices: [
+      {
+        price: {
+          type: Number,
+          default: 0,
+          trim: true,
+        },
+        currencySymbol: { type: String, required: true, maxlength: 1 },
+        currency: { type: String, required: true },
+      },
+    ],
   },
   {
     timestamps: true,

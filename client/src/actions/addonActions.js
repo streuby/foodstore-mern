@@ -17,7 +17,7 @@ import {
   ADDON_UPDATE_SUCCESS,
 } from "../constants/addonConstants";
 
-export const createAddon = (addon, price) => async (dispatch, getState) => {
+export const createAddon = (addon, prices) => async (dispatch, getState) => {
   try {
     dispatch({ type: ADDON_CREATE_REQUEST });
     const {
@@ -30,7 +30,7 @@ export const createAddon = (addon, price) => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
-    await axios.post(`/api/addon`, { name: addon, price }, config);
+    await axios.post(`/api/addon`, { name: addon, prices }, config);
 
     dispatch({ type: ADDON_CREATE_SUCCESS });
   } catch (error) {
@@ -118,7 +118,7 @@ export const detailsAddon = (slug) => async (dispatch) => {
 };
 
 export const updateAddon =
-  (newAddon, price, slug) => async (dispatch, getState) => {
+  (newAddon, prices, slug) => async (dispatch, getState) => {
     try {
       dispatch({ type: ADDON_UPDATE_REQUEST });
 
@@ -133,7 +133,7 @@ export const updateAddon =
         },
       };
 
-      await axios.put(`/api/addon/${slug}`, { name: newAddon, price }, config);
+      await axios.put(`/api/addon/${slug}`, { name: newAddon, prices }, config);
 
       dispatch({ type: ADDON_UPDATE_SUCCESS });
     } catch (error) {

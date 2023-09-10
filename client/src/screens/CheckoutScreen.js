@@ -161,8 +161,8 @@ const CheckoutScreen = () => {
                       <Row className="d-flex flex-column">
                         <Col>
                           <span style={{ fontWeight: "600" }}>
-                            {pd.product.title} x {pd.quantity} = $
-                            {pd.quantity * pd.price}
+                            {pd.slug} x {pd.qty} = {pd.price.currencySymbol}
+                            {pd.qty * pd.price.price}
                           </span>
                         </Col>
                         {pd.variableData && (
@@ -178,10 +178,12 @@ const CheckoutScreen = () => {
                             </Badge>
                           </Col>
                         )}
-                        {pd.addon && (
+                        {pd.addonData && (
                           <Col>
-                            <span style={{ fontSize: "14px" }}>Addons:</span>{" "}
-                            {pd.addon.map((adn) => (
+                            {pd.addonData.length > 0 && (
+                              <span style={{ fontSize: "14px" }}>Addons:</span>
+                            )}{" "}
+                            {pd.addonData.map((adn) => (
                               <Badge
                                 key={adn._id}
                                 style={{
@@ -189,7 +191,7 @@ const CheckoutScreen = () => {
                                   marginLeft: "2px",
                                 }}
                               >
-                                {adn.name.split("-")[0]}
+                                {adn.name}
                               </Badge>
                             ))}
                           </Col>
@@ -199,7 +201,8 @@ const CheckoutScreen = () => {
                   ))
                 )}
                 <ListGroup.Item style={{ backgroundColor: "#dff9fb" }}>
-                  <span style={{ fontWeight: "600" }}>Total: </span>$
+                  <span style={{ fontWeight: "600" }}>Total: </span>
+                  {cartItems.currency.currencySymbol}
                   {cartItems && cartItems.couponApplied === false ? (
                     cartItems.cartTotal
                   ) : (
@@ -211,7 +214,8 @@ const CheckoutScreen = () => {
                     <Row className="d-flex align-items-center">
                       <Col md={8}>
                         <span style={{ color: "#fff" }}>
-                          Discount Applied: Total Payable: $
+                          Discount Applied: Total Payable:{" "}
+                          {cartItems.currency.currencySymbol}
                           {cartItems && cartItems.totalAfterDiscount}
                         </span>
                       </Col>

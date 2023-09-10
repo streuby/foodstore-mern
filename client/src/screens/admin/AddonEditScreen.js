@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from "react";
 import FormContainer from "../../components/FormContainer";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import Loader from "../../components/Loader";
 import Message from "../../components/Message";
 import { useDispatch, useSelector } from "react-redux";
 import { detailsAddon, updateAddon } from "../../actions/addonActions";
 import { ADDON_UPDATE_RESET } from "../../constants/addonConstants";
-const AddonEditScreen = ({ match }) => {
-  const addonSlug = match.params.slug;
+import CurrencySelect from "../../components/form/CurrencySelect";
+const AddonEditScreen = () => {
   const [addon, setAddon] = useState("");
-  const [price, setPrice] = useState("");
+  const [prices, setPrices] = useState({});
+  const [selectedCurrencies, setSelectedCurrencies] = useState([]);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const params = useParams();
+
+  const { slug: addonSlug } = params;
 
   //check logged in user
 
@@ -43,7 +47,12 @@ const AddonEditScreen = ({ match }) => {
         dispatch(detailsAddon(addonSlug));
       } else {
         setAddon(addonData.name);
-        setPrice(addonData.price);
+        setPrices(
+          addonData.prices.reduce((result, item) => {
+            result[item.currency] = item.price;
+            return result;
+          }, {})
+        );
       }
     }
   }, [dispatch, addonSlug, addonData, successUpdate, userInfo, navigate]);
@@ -51,7 +60,12 @@ const AddonEditScreen = ({ match }) => {
   const submitHandler = (e) => {
     e.preventDefault();
 
-    dispatch(updateAddon(addon, price, addonSlug));
+    dispatch(updateAddon(addon, prices, addonSlug));
+    dispatch(detailsAddon(addonSlug));
+  };
+
+  const updatePrices = (key, symbol, value) => {
+    setPrices({ [key]: parseInt(value) });
   };
 
   return (
@@ -65,7 +79,7 @@ const AddonEditScreen = ({ match }) => {
         {error && <Message variant="danger">{error}</Message>}
         <Form onSubmit={submitHandler} className="my-5">
           <Form.Group controlId="Update addon">
-            <Form.Label>Create Addon</Form.Label>
+            <Form.Label>Update Addon</Form.Label>
             <Form.Control
               type="text"
               placeholder="Enter addon"
@@ -73,16 +87,32 @@ const AddonEditScreen = ({ match }) => {
               onChange={(e) => setAddon(e.target.value)}
             ></Form.Control>
           </Form.Group>
-          <Form.Group controlId="price">
-            <Form.Label>Price($)</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Enter price($)"
-              value={price}
-              required
-              onChange={(e) => setPrice(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
+          <CurrencySelect
+            selectedCurrencies={selectedCurrencies}
+            setSelectedCurrencies={setSelectedCurrencies}
+            multiselect={false}
+          />
+          {selectedCurrencies.name && (
+            <Form.Group controlId="price">
+              <Form.Label>{`${selectedCurrencies.name} Price`}</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder={`Enter ${selectedCurrencies.name} price`}
+                value={
+                  selectedCurrencies.isocode in prices &&
+                  prices[selectedCurrencies.isocode]
+                }
+                required
+                onChange={(e) =>
+                  updatePrices(
+                    selectedCurrencies.isocode,
+                    selectedCurrencies.symbol,
+                    e.target.value
+                  )
+                }
+              ></Form.Control>
+            </Form.Group>
+          )}
           <Button
             type="submit"
             variant="primary"

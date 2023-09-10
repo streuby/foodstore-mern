@@ -1,9 +1,18 @@
 import asyncHandler from "express-async-handler";
 import Addon from "../models/addonModel.js";
 import slugify from "slugify";
+import Currency from "../models/currencyModel.js";
 
 export const addonCreate = asyncHandler(async (req, res) => {
-  const { name, price } = req.body;
+  const { name, prices } = req.body;
+  const currencies = await Currency.find({});
+  const pricesObj = Object.entries(prices).map(([currency, price]) => ({
+    price: price,
+    currencySymbol: currencies
+      .map(({ isocode, symbol }) => isocode === currency && symbol)
+      .filter((element) => element !== false)[0],
+    currency: currency,
+  }));
   const addonExist = await Addon.findOne({ slug: slugify(name) });
 
   if (addonExist) {
@@ -13,7 +22,7 @@ export const addonCreate = asyncHandler(async (req, res) => {
     const addon = await Addon.create({
       name,
       slug: slugify(name),
-      price,
+      prices: pricesObj,
     });
     if (addon) {
       res.json(addon);
@@ -47,17 +56,25 @@ export const addonBySlug = asyncHandler(async (req, res) => {
 
 export const addonUpdate = asyncHandler(async (req, res) => {
   const slug = req.params.slug;
-  const { name, price } = req.body;
+  const { name, prices } = req.body;
+  const currencies = await Currency.find({});
+  const pricesObj = Object.entries(prices).map(([currency, price]) => ({
+    price: price,
+    currencySymbol: currencies
+      .map(({ isocode, symbol }) => isocode === currency && symbol)
+      .filter((element) => element !== false)[0],
+    currency: currency,
+  }));
   const addon = await Addon.findOne({ slug });
   if (addon) {
     const addonExist = await Addon.findOne({ slug: slugify(name) });
-    if (addonExist) {
+    if (!addonExist) {
       res.status(500);
-      throw new Error("Addon with the same name already exist");
+      throw new Error("Addon with the same name does not exist");
     } else {
       addon.name = name;
       addon.slug = slugify(name);
-      addon.price = price;
+      addon.prices = pricesObj;
       const updatedAddon = await addon.save();
       res.json(updatedAddon);
     }

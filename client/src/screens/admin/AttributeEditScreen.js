@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import FormContainer from "../../components/FormContainer";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import Loader from "../../components/Loader";
 import Message from "../../components/Message";
@@ -13,14 +13,16 @@ import {
   ATTRIBUTE_DETAILS_RESET,
   ATTRIBUTE_UPDATE_RESET,
 } from "../../constants/attributeConstants";
-const AttributeEditScreen = ({ match }) => {
-  const attributeId = match.params.id;
-  const [attribute, setAttribute] = useState("");
-  const [price, setPrice] = useState("");
+const AttributeEditScreen = () => {
+  const [attribute, setAttribute] = useState([]);
+  const [name, setName] = useState("");
+  const [prices, setPrices] = useState({});
   const [product, setProduct] = useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const params = useParams();
+  const { id: attributeId } = params;
 
   //check logged in user
 
@@ -50,17 +52,34 @@ const AttributeEditScreen = ({ match }) => {
       if (!attributeData.name || attributeData._id !== attributeId) {
         dispatch(detailsAttribute(attributeId));
       } else {
-        setAttribute(attributeData.name);
-        setPrice(attributeData.price);
+        setAttribute(attributeData);
         setProduct(attributeData.product);
+        setName(attributeData.name);
+        setPrices(
+          attributeData.prices.reduce((result, item) => {
+            result[item.currency] = item.price;
+            return result;
+          }, {})
+        );
       }
     }
-  }, [dispatch, attributeId, attributeData, successUpdate, userInfo, navigate]);
+  }, [
+    dispatch,
+    attributeId,
+    attributeData,
+    successUpdate,
+    userInfo,
+    navigate,
+    attribute,
+  ]);
 
   const submitHandler = (e) => {
     e.preventDefault();
+    dispatch(updateAttribute(name, prices, product, attributeId));
+  };
 
-    dispatch(updateAttribute(attribute, price, product, attributeId));
+  const updatePrices = (key, value) => {
+    setPrices({ ...prices, [key]: parseInt(value) });
   };
 
   return (
@@ -80,20 +99,23 @@ const AttributeEditScreen = ({ match }) => {
             <Form.Control
               type="text"
               placeholder="Enter attribute"
-              value={attribute}
-              onChange={(e) => setAttribute(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             ></Form.Control>
           </Form.Group>
-          <Form.Group controlId="price">
-            <Form.Label>Price($)</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Enter price($)"
-              value={price}
-              required
-              onChange={(e) => setPrice(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
+          {attribute.prices &&
+            attribute.prices.map(({ price, currencySymbol, currency }) => (
+              <Form.Group controlId="price">
+                <Form.Label>{` Price - ${currencySymbol}`}</Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder={`Enter ${currencySymbol} price`}
+                  value={(currency in prices && prices[currency]) || ""}
+                  required
+                  onChange={(e) => updatePrices(currency, e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+            ))}
           <Form.Group controlId="product">
             <Form.Label>Product Name</Form.Label>
             <Form.Control
