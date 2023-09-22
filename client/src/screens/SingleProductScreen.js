@@ -22,6 +22,7 @@ import { useAlert } from "react-alert";
 import { ADD_TO_WISHLIST_RESET } from "../constants/userConstants";
 import Loader from "../components/Loader";
 import Meta from "../components/Meta";
+import { formatCurrency, userLocale } from "../utils";
 
 const SingleProductScreen = () => {
   const alert = useAlert();
@@ -227,7 +228,12 @@ const SingleProductScreen = () => {
                                 isValid
                               />
                               <Form.Check.Label>
-                                <p>{`${currencySymbol} ${price}`}</p>
+                                <p>{`${formatCurrency(
+                                  price,
+                                  currency,
+                                  currencySymbol,
+                                  userLocale
+                                )}`}</p>
                               </Form.Check.Label>
                               <Form.Control.Feedback type="valid">
                                 Check to select price
@@ -279,8 +285,13 @@ const SingleProductScreen = () => {
                                         }}
                                       />
                                       <p style={{ margin: "0px" }}>
-                                        {attr.name} - {currencySymbol}
-                                        {price}
+                                        {attr.name} -{" "}
+                                        {formatCurrency(
+                                          price,
+                                          currency,
+                                          currencySymbol,
+                                          userLocale
+                                        )}
                                       </p>
                                       {" ] "}
                                     </>
@@ -303,7 +314,12 @@ const SingleProductScreen = () => {
                       <MultiSelect
                         options={product.addon
                           .map((a) => ({
-                            label: `${a.name}-${a.prices[0].currencySymbol}${a.prices[0].price}`,
+                            label: `${a.name}-${formatCurrency(
+                              a.prices[0].price,
+                              currency,
+                              a.prices[0].currencySymbol,
+                              userLocale
+                            )}`,
                             value: a._id,
                             prices: a.prices,
                             name: a.name,
@@ -322,18 +338,23 @@ const SingleProductScreen = () => {
                   <ListGroup.Item style={{ backgroundColor: "transparent" }}>
                     <p>
                       <h4>
-                        You will be billed {price.currencySymbol}
-                        {price.price * counter +
-                          addon.reduce((total, item) => {
-                            const currencyPrices = item.prices.filter(
-                              (_price) => _price.currency === price.currency
-                            );
-                            const sum = currencyPrices.reduce(
-                              (acc, __price) => acc + __price.price,
-                              0
-                            );
-                            return (total + sum) * counter;
-                          }, 0)}
+                        You will be billed{" "}
+                        {formatCurrency(
+                          price.price * counter +
+                            addon.reduce((total, item) => {
+                              const currencyPrices = item.prices.filter(
+                                (_price) => _price.currency === price.currency
+                              );
+                              const sum = currencyPrices.reduce(
+                                (acc, __price) => acc + __price.price,
+                                0
+                              );
+                              return (total + sum) * counter;
+                            }, 0),
+                          price.currency,
+                          price.currencySymbol,
+                          userLocale
+                        )}
                       </h4>
                     </p>
                   </ListGroup.Item>

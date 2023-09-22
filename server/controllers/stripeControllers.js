@@ -4,6 +4,8 @@ import User from "../models/userModel.js";
 import Stripe from "stripe";
 const stripe = Stripe(process.env.STRIPE_SECRET);
 
+//console.log("Stripe: ", `${process.env.STRIPE_SECRET}`);
+
 export const createPaymentIntent = asyncHandler(async (req, res) => {
   // 1 find user
   const user = await User.findOne({ email: req.user.email }).exec();
@@ -18,6 +20,7 @@ export const createPaymentIntent = asyncHandler(async (req, res) => {
       currency: "usd",
     });
     if (paymentIntent) {
+      console.log("payment intent: ".paymentIntent);
       res.send({
         clientSecret: paymentIntent.client_secret,
       });

@@ -17,6 +17,7 @@ import { DELETE_PRODUCT_RESET } from "../../constants/productConstants";
 import ItemSearch from "../../components/ItemSearch";
 import { Link, useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
+import { formatCurrency, userLocale } from "../../utils";
 
 const ProductListScreen = () => {
   const [keyword, setKeyword] = useState("");
@@ -161,27 +162,61 @@ const ProductListScreen = () => {
                       )}
                     </td>
                     <td>
-                      {product.price ? (
-                        <span>${product.price}</span>
-                      ) : product.variable && product.variable.attribute ? (
-                        product.variable.attribute.map((attr) => (
-                          <span key={attr._id}>
-                            Attr: ${attr.price}
-                            <br />
-                          </span>
-                        ))
+                      {product.prices.length > 0 ? (
+                        <span>
+                          {product.prices.map(
+                            ({ price, currencySymbol, currency }) => (
+                              <span
+                                style={{ color: "#000", fontWeight: "600" }}
+                              >
+                                {formatCurrency(
+                                  price,
+                                  currency,
+                                  currencySymbol,
+                                  userLocale
+                                )}{" "}
+                              </span>
+                            )
+                          )}
+                        </span>
+                      ) : product.variable &&
+                        product.variable.attribute.length > 0 ? (
+                        product.variable.attribute.map((attr) =>
+                          attr.prices.map(
+                            ({ price, currency, currencySymbol }) => (
+                              <span
+                                key={attr._id}
+                                style={{ color: "#000", fontWeight: "600" }}
+                              >
+                                Attr:
+                                {formatCurrency(
+                                  price,
+                                  currency,
+                                  currencySymbol,
+                                  userLocale
+                                )}{" "}
+                                <br />
+                              </span>
+                            )
+                          )
+                        )
                       ) : (
                         "No Price"
                       )}
                     </td>
-                    <td>{product.category.name}</td>
+                    <td style={{ color: "#000", fontWeight: "600" }}>
+                      {product.category.name}
+                    </td>
                     <td>
                       {product.addon.map((a) => (
-                        <span key={a._id}>
+                        <span
+                          key={a._id}
+                          style={{ color: "#000", fontWeight: "600" }}
+                        >
                           {a.name}
                           <br />
                         </span>
-                      ))}
+                      ))}{" "}
                     </td>
                     <td className="d-flex justify-content-around">
                       <LinkContainer to={`/admin/product/${product.slug}/edit`}>

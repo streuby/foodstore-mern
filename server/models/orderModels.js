@@ -8,10 +8,12 @@ const OrderSchema = mongoose.Schema(
           type: ObjectId,
           ref: "Product",
         },
-        price: Number,
-        quantity: Number,
+        slug: { type: String },
+        image: { type: String },
+        qty: Number,
+        price: Object,
         variableData: Object,
-        addon: [
+        addonData: [
           {
             type: Object,
           },
@@ -33,6 +35,7 @@ const OrderSchema = mongoose.Schema(
       },
     },
     paymentMethod: String,
+    currency: Object,
     orderStatus: {
       type: String,
       default: "Not Processed",

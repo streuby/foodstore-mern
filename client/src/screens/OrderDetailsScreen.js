@@ -17,6 +17,7 @@ import Loader from "../components/Loader";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Invoice from "../components/Invoice";
 import Meta from "../components/Meta";
+import { formatCurrency, userLocale } from "../utils";
 
 const OrderDetailsScreen = () => {
   const dispatch = useDispatch();
@@ -170,12 +171,18 @@ const OrderDetailsScreen = () => {
                                     <Link to={`/product/${item.product.slug}`}>
                                       {item.product.title}
                                     </Link>{" "}
-                                    x {item.quantity}
+                                    x {item.qty}
                                   </span>
                                 </Col>
                                 <Col md={3}>
                                   <span style={{ fontWeight: "600" }}>
-                                    = ${item.quantity * item.price}
+                                    =
+                                    {formatCurrency(
+                                      item.qty * item.price.price,
+                                      item.price.currency,
+                                      item.price.currencySymbol,
+                                      userLocale
+                                    )}
                                   </span>
                                 </Col>
                               </Row>
@@ -193,23 +200,44 @@ const OrderDetailsScreen = () => {
                                 </Badge>
                               </Col>
                             )}
-                            {item.addon && (
-                              <Col>
-                                <span style={{ fontSize: "14px" }}>
-                                  Addons:
-                                </span>{" "}
-                                {item.addon.map((adn) => (
-                                  <Badge
-                                    key={adn._id}
-                                    style={{
-                                      backgroundColor: "#FFC107",
-                                      marginLeft: "2px",
-                                    }}
-                                  >
-                                    {adn.name.split("-")[0]}
-                                  </Badge>
-                                ))}
-                              </Col>
+                            {item.addonData?.length > 0 && (
+                              <>
+                                <Col>
+                                  <span style={{ fontSize: "14px" }}>
+                                    Addons:
+                                  </span>{" "}
+                                  {item.addonData.map((adn) => (
+                                    <Badge
+                                      key={adn._id}
+                                      style={{
+                                        backgroundColor: "#FFC107",
+                                        marginLeft: "2px",
+                                      }}
+                                    >
+                                      {adn.name.split("-")[0]}
+                                    </Badge>
+                                  ))}
+                                </Col>
+                                <Col>
+                                  Total Addon:{" "}
+                                  {formatCurrency(
+                                    item.addonData.reduce((acc, item) => {
+                                      return (
+                                        acc +
+                                        item.prices.reduce(
+                                          (priceAcc, priceItem) => {
+                                            return priceAcc + priceItem.price;
+                                          },
+                                          0
+                                        )
+                                      );
+                                    }, 0),
+                                    item.price.currency,
+                                    item.price.currencySymbol,
+                                    userLocale
+                                  )}
+                                </Col>
+                              </>
                             )}
                           </Row>
                         </Col>
@@ -231,10 +259,17 @@ const OrderDetailsScreen = () => {
                 <ListGroup.Item>
                   <Row>
                     <Col>
-                      <b>Total:</b>
+                      <b>Total: </b>
                     </Col>
                     <Col>
-                      $<del>{order.cartTotal}</del>
+                      <del>
+                        {formatCurrency(
+                          order.cartTotal,
+                          order.currency && order.currency.currency,
+                          order.currency && order.currency.currencySymbol,
+                          userLocale
+                        )}
+                      </del>
                     </Col>
                   </Row>
                 </ListGroup.Item>
@@ -243,15 +278,26 @@ const OrderDetailsScreen = () => {
                     <Col>
                       <b>Total After Discount:</b>
                     </Col>
-                    <Col>${order.totalAfterDiscount}</Col>
+                    <Col>
+                      {order.currency && order.currency.currencySymbol}
+                      {order.totalAfterDiscount}
+                    </Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Row>
                     <Col>
-                      <b>Total Payable:</b>
+                      <b>Total Payable: </b>
                     </Col>
-                    <Col>${order.totalAfterDiscount}</Col>
+                    <Col>
+                      {order.currency &&
+                        formatCurrency(
+                          order.totalAfterDiscount,
+                          order.currency.currency,
+                          order.currency.currencySymbol,
+                          userLocale
+                        )}
+                    </Col>
                   </Row>
                 </ListGroup.Item>
               </>
@@ -260,17 +306,33 @@ const OrderDetailsScreen = () => {
                 <ListGroup.Item>
                   <Row>
                     <Col>
-                      <b>Total:</b>
+                      <b>Total: </b>
                     </Col>
-                    <Col>${order.cartTotal}</Col>
+                    <Col>
+                      {order.currency &&
+                        formatCurrency(
+                          order.cartTotal,
+                          order.currency.currency,
+                          order.currency.currencySymbol,
+                          userLocale
+                        )}
+                    </Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Row>
                     <Col>
-                      <b>Total Payable:</b>
+                      <b>Total Payable: </b>
                     </Col>
-                    <Col>${order.cartTotal}</Col>
+                    <Col>
+                      {order.currency &&
+                        formatCurrency(
+                          order.cartTotal,
+                          order.currency.currency,
+                          order.currency.currencySymbol,
+                          userLocale
+                        )}
+                    </Col>
                   </Row>
                 </ListGroup.Item>
               </>

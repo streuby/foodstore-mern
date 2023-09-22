@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { REMOVE_WISHLIST_RESET } from "../../constants/userConstants";
 import Meta from "../../components/Meta";
+import { formatCurrency, userLocale } from "../../utils";
 
 const WishlistScreen = () => {
   const dispatch = useDispatch();
@@ -97,12 +98,31 @@ const WishlistScreen = () => {
                       <span className="fs-6">${product.price}</span>
                     ) : product.variable ? (
                       <span className="fs-6">
-                        ${product.variable.attribute[0].price}- $
-                        {
-                          product.variable.attribute[
-                            product.variable.attribute.length - 1
-                          ].price
-                        }
+                        {product.variable.attribute.map((a) => (
+                          <span key={a._id}>
+                            {a.name}
+                            {" ["}
+                            {a.prices.map(
+                              ({ price, currency, currencySymbol }) => (
+                                <span
+                                  style={{
+                                    color: "#b38f00",
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  {formatCurrency(
+                                    price,
+                                    currency,
+                                    currencySymbol,
+                                    userLocale
+                                  )}{" "}
+                                </span>
+                              )
+                            )}
+                            {"] "}
+                            <br />
+                          </span>
+                        ))}
                       </span>
                     ) : (
                       "No price"

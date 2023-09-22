@@ -14,6 +14,8 @@ import {
 import Message from "../components/Message";
 import { CART_CLEAR_ITEM, CART_DB_RESET } from "../constants/cartConstants";
 import Meta from "../components/Meta";
+import { formatCurrency, userLocale } from "../utils";
+
 const CartScreen = () => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalAddon, setTotalAddon] = useState(0);
@@ -165,15 +167,23 @@ const CartScreen = () => {
                                 margin: "0px",
                               }}
                             >
-                              Total Addon Price: {item.price.currencySymbol}
-                              {item.addonData.reduce((acc, item) => {
-                                return (
-                                  acc +
-                                  item.prices.reduce((priceAcc, priceItem) => {
-                                    return priceAcc + priceItem.price;
-                                  }, 0)
-                                );
-                              }, 0) * item.qty}
+                              Total Addon Price:{" "}
+                              {formatCurrency(
+                                item.addonData.reduce((acc, item) => {
+                                  return (
+                                    acc +
+                                    item.prices.reduce(
+                                      (priceAcc, priceItem) => {
+                                        return priceAcc + priceItem.price;
+                                      },
+                                      0
+                                    )
+                                  );
+                                }, 0) * item.qty,
+                                item.price.currency,
+                                item.price.currencySymbol,
+                                userLocale
+                              )}
                             </p>
                           </div>
                         </div>
@@ -181,8 +191,12 @@ const CartScreen = () => {
                     </Col>
                     <Col md={2}>
                       <p style={{ fontWeight: "600" }}>
-                        {item.price.currencySymbol}
-                        {item.price.price * item.qty}
+                        {formatCurrency(
+                          item.price.price * item.qty,
+                          item.price.currency,
+                          item.price.currencySymbol,
+                          userLocale
+                        )}
                       </p>
                     </Col>
                     <Col md={3} className="d-flex flex-row align-items-start">
@@ -238,8 +252,15 @@ const CartScreen = () => {
                 Items
               </ListGroup.Item>
               <ListGroup.Item>
-                Total Addon Price ({currency && currency.currencySymbol}{" "}
-                {totalAddon})
+                Total Addon Price (
+                {currency &&
+                  formatCurrency(
+                    totalAddon,
+                    currency.currency,
+                    currency.currencySymbol,
+                    userLocale
+                  )}{" "}
+                )
               </ListGroup.Item>
               <ListGroup.Item>
                 Total ({currency && currency.currencySymbol} {totalPrice})

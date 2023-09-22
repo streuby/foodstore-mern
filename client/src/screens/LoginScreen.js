@@ -99,29 +99,32 @@ const LoginScreen = () => {
             onChange={(e) => setPassword(e.target.value)}
           ></Form.Control>
         </Form.Group>
-
+        <Form.Group controlId="submit">
+          <Button
+            type="submit"
+            variant="light"
+            className="mt-3"
+            style={{ width: "-webkit-fill-available" }}
+            disabled={!userEmail || !password}
+          >
+            Sign In with Email and Password
+          </Button>
+        </Form.Group>
+      </Form>
+      <Form.Group controlId="submit">
         <Button
           type="submit"
-          variant="light"
-          className="mt-3"
+          variant="info"
+          className="my-3"
           style={{ width: "-webkit-fill-available" }}
-          disabled={!userEmail || !password}
+          onClick={googleLogin}
         >
-          Sign In with Email and Password
+          <FontAwesomeIcon icon={faGoogle} /> Sign In with Google
         </Button>
-      </Form>
-      <Button
-        type="submit"
-        variant="info"
-        className="my-3"
-        style={{ width: "-webkit-fill-available" }}
-        onClick={googleLogin}
-      >
-        <FontAwesomeIcon icon={faGoogle} /> Sign In with Google
-      </Button>
+      </Form.Group>
       <Row className="py-3">
         <Col md={6} sm={12}>
-          Don't have An Account? <Link to="/register">Register</Link>
+          New Here? <Link to="/register">Register</Link>
         </Col>
         <Col md={6} sm={12}>
           <Link

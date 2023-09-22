@@ -16,6 +16,7 @@ import ItemSearch from "../../components/ItemSearch";
 import CurrencySelect from "../../components/form/CurrencySelect";
 import { useNavigate } from "react-router-dom";
 import { listCurrency } from "../../actions/currencyActions";
+import { formatCurrency, userLocale } from "../../utils";
 
 const AddonScreen = () => {
   const [addon, setAddon] = useState("");
@@ -155,7 +156,14 @@ const AddonScreen = () => {
                   <tr key={addon._id}>
                     <td>{addon.name}</td>
                     <td>{addon.slug}</td>
-                    <td>{`${addon.prices[0].currencySymbol}${addon.prices[0].price}`}</td>
+                    <td>
+                      {`${formatCurrency(
+                        addon.prices[0].price,
+                        addon.prices[0].currency,
+                        addon.prices[0].currencySymbol,
+                        userLocale
+                      )}`}
+                    </td>
                     <td>
                       <LinkContainer to={`/admin/addon/${addon.slug}/edit`}>
                         <Button variant="dark" className="btn-sm">

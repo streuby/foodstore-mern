@@ -234,7 +234,10 @@ function App() {
                 />
                 <Route path="/cart" element={<CartScreen />} />
                 <Route path="/checkout" element={<CheckoutScreen />} />
-                <Route path="/placeorder" element={<PlaceOrderScreen />} />
+                <Route
+                  path="/placeorder/:gateway"
+                  element={<PlaceOrderScreen />}
+                />
                 <Route path="/order/:id" element={<OrderDetailsScreen />} />
                 <Route path="/admin/user/:id" element={<UserDetailsScreen />} />
               </Routes>

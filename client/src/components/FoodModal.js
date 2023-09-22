@@ -19,6 +19,7 @@ import Skeleton from "react-loading-skeleton";
 import Message from "./Message";
 import { addToWish } from "../actions/userActions";
 import Loader from "./Loader";
+import { formatCurrency, userLocale } from "../utils";
 
 const FoodModal = ({
   setModalShow,
@@ -196,7 +197,12 @@ const FoodModal = ({
                                     isValid
                                   />
                                   <Form.Check.Label>
-                                    <p>{`${currencySymbol} ${price}`}</p>
+                                    <p>{`${formatCurrency(
+                                      price,
+                                      currency,
+                                      currencySymbol,
+                                      userLocale
+                                    )}`}</p>
                                   </Form.Check.Label>
                                   <Form.Control.Feedback type="valid">
                                     Check to select price
@@ -251,8 +257,13 @@ const FoodModal = ({
                                             }}
                                           />
                                           <p style={{ margin: "0px" }}>
-                                            {attr.name} - {currencySymbol}
-                                            {price}
+                                            {attr.name} -{" "}
+                                            {formatCurrency(
+                                              price,
+                                              currency,
+                                              currencySymbol,
+                                              userLocale
+                                            )}
                                           </p>
                                           {" ] "}
                                         </>
@@ -298,18 +309,24 @@ const FoodModal = ({
                       >
                         <p>
                           <h4>
-                            You will be billed {price.currencySymbol}
-                            {price.price * counter +
-                              addon.reduce((total, item) => {
-                                const currencyPrices = item.prices.filter(
-                                  (_price) => _price.currency === price.currency
-                                );
-                                const sum = currencyPrices.reduce(
-                                  (acc, __price) => acc + __price.price,
-                                  0
-                                );
-                                return (total + sum) * counter;
-                              }, 0)}
+                            You will be billed{" "}
+                            {formatCurrency(
+                              price.price * counter +
+                                addon.reduce((total, item) => {
+                                  const currencyPrices = item.prices.filter(
+                                    (_price) =>
+                                      _price.currency === price.currency
+                                  );
+                                  const sum = currencyPrices.reduce(
+                                    (acc, __price) => acc + __price.price,
+                                    0
+                                  );
+                                  return (total + sum) * counter;
+                                }, 0),
+                              price.currency,
+                              price.currencySymbol,
+                              userLocale
+                            )}
                           </h4>
                         </p>
                       </ListGroup.Item>

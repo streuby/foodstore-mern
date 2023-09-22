@@ -22,6 +22,7 @@ import ApplyCoupon from "../components/form/ApplyCoupon";
 import Loader from "../components/Loader";
 import { createOrder } from "../actions/orderActions";
 import Meta from "../components/Meta";
+import { formatCurrency, userLocale } from "../utils";
 
 const CheckoutScreen = () => {
   const alert = useAlert();
@@ -161,8 +162,13 @@ const CheckoutScreen = () => {
                       <Row className="d-flex flex-column">
                         <Col>
                           <span style={{ fontWeight: "600" }}>
-                            {pd.slug} x {pd.qty} = {pd.price.currencySymbol}
-                            {pd.qty * pd.price.price}
+                            {pd.slug} x {pd.qty} =
+                            {formatCurrency(
+                              pd.qty * pd.price.price,
+                              pd.price.currency,
+                              pd.price.currencySymbol,
+                              userLocale
+                            )}
                           </span>
                         </Col>
                         {pd.variableData && (
@@ -202,9 +208,13 @@ const CheckoutScreen = () => {
                 )}
                 <ListGroup.Item style={{ backgroundColor: "#dff9fb" }}>
                   <span style={{ fontWeight: "600" }}>Total: </span>
-                  {cartItems.currency.currencySymbol}
                   {cartItems && cartItems.couponApplied === false ? (
-                    cartItems.cartTotal
+                    formatCurrency(
+                      cartItems.cartTotal,
+                      cartItems.currency.currency,
+                      cartItems.currency.currencySymbol,
+                      userLocale
+                    )
                   ) : (
                     <del>{cartItems.cartTotal}</del>
                   )}
@@ -245,6 +255,22 @@ const CheckoutScreen = () => {
                   ></Form.Check>
                   <Form.Check
                     type="radio"
+                    label="Paystrack Payment"
+                    id="Paystack"
+                    name="paymentMethod"
+                    value="Paystack"
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                  ></Form.Check>
+                  <Form.Check
+                    type="radio"
+                    label="Flutterwave Payment"
+                    id="Flutterwave"
+                    name="paymentMethod"
+                    value="Flutterwave"
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                  ></Form.Check>
+                  <Form.Check
+                    type="radio"
                     label="Cash On Delivery"
                     id="Cod"
                     name="paymentMethod"
@@ -261,7 +287,9 @@ const CheckoutScreen = () => {
                           variant={
                             userInfo && !userInfo.shipping ? "dark" : "success"
                           }
-                          onClick={() => navigate("/placeorder")}
+                          onClick={() =>
+                            navigate(`/placeorder/${paymentMethod}`)
+                          }
                         >
                           Place Order (Stripe)
                         </Button>
@@ -276,8 +304,32 @@ const CheckoutScreen = () => {
                           {loading ? (
                             <Loader className="size-sm" />
                           ) : (
-                            "Place Order (COD)"
+                            "Place Order (Paystack)"
                           )}
+                        </Button>
+                      ) : paymentMethod === "Paystack" ? (
+                        <Button
+                          disabled={userInfo && !userInfo.shipping}
+                          variant={
+                            userInfo && !userInfo.shipping ? "dark" : "success"
+                          }
+                          onClick={() =>
+                            navigate(`/placeorder/${paymentMethod}`)
+                          }
+                        >
+                          Place Order (Paystack)
+                        </Button>
+                      ) : paymentMethod === "Flutterwave" ? (
+                        <Button
+                          disabled={userInfo && !userInfo.shipping}
+                          variant={
+                            userInfo && !userInfo.shipping ? "dark" : "success"
+                          }
+                          onClick={() =>
+                            navigate(`/placeorder/${paymentMethod}`)
+                          }
+                        >
+                          Place Order (Flutterwave)
                         </Button>
                       ) : (
                         <Button disabled variant={"dark"}>

@@ -10,6 +10,7 @@ import Message from "../Message";
 import { CART_LIST_RESET } from "../../constants/cartConstants";
 import { userDbCartDelete } from "../../actions/cartActions";
 import { useAlert } from "react-alert";
+import { formatCurrency, userLocale } from "../../utils";
 
 const StripeCheckoutForm = ({ cartItems, userInfo }) => {
   const alert = useAlert();
@@ -39,16 +40,14 @@ const StripeCheckoutForm = ({ cartItems, userInfo }) => {
     e.preventDefault();
     setProcessing(true);
 
+    console.log("Fired handleSubmit >>>>");
+
     const config = {
       headers: {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
-    const { data } = await axios.post(
-      `${process.env.REACT_APP_API}/api/create-payment-intent`,
-      {},
-      config
-    );
+    const { data } = await axios.post(`/api/create-payment-intent`, {}, config);
 
     const payload = await stripe.confirmCardPayment(data.clientSecret, {
       payment_method: {
@@ -60,12 +59,17 @@ const StripeCheckoutForm = ({ cartItems, userInfo }) => {
       },
     });
 
+    console.log("payload: ", payload);
+
     if (payload.error) {
       setError(`Payment failed ${payload.error.message}`);
+      console.log(payload);
       setProcessing(false);
     } else {
       if (payload.paymentIntent.status === "succeeded") {
-        dispatch(createOrder(payload.paymentIntent, "Stripe"));
+        dispatch(
+          createOrder(payload.paymentIntent, "Stripe", cartItems.currency)
+        );
         setError(null);
         setProcessing(false);
         setSucceeded(true);
@@ -115,12 +119,18 @@ const StripeCheckoutForm = ({ cartItems, userInfo }) => {
                             {index + 1}){" "}
                           </span>
                           <span style={{ fontWeight: "600" }}>
-                            {pd.product.title} x {pd.quantity}
+                            {pd.product.title} x {pd.qty}
                           </span>
                         </Col>
                         <Col md={3}>
                           <span style={{ fontWeight: "600" }}>
-                            = ${pd.quantity * pd.price}
+                            =
+                            {formatCurrency(
+                              pd.qty * pd.price.price,
+                              pd.price.currency,
+                              pd.price.currencySymbol,
+                              userLocale
+                            )}
                           </span>
                         </Col>
                       </Row>
@@ -138,21 +148,39 @@ const StripeCheckoutForm = ({ cartItems, userInfo }) => {
                         </Badge>
                       </Col>
                     )}
-                    {pd.addon && (
-                      <Col>
-                        <span style={{ fontSize: "14px" }}>Addons:</span>{" "}
-                        {pd.addon.map((adn) => (
-                          <Badge
-                            key={adn._id}
-                            style={{
-                              backgroundColor: "#FFC107",
-                              marginLeft: "2px",
-                            }}
-                          >
-                            {adn.name.split("-")[0]}
-                          </Badge>
-                        ))}
-                      </Col>
+                    {pd.addonData.length > 0 && (
+                      <>
+                        <Col>
+                          <span style={{ fontSize: "14px" }}>Addons:</span>{" "}
+                          {pd.addonData.map((adn) => (
+                            <Badge
+                              key={adn.value}
+                              style={{
+                                backgroundColor: "#FFC107",
+                                marginLeft: "2px",
+                              }}
+                            >
+                              {adn.name}
+                            </Badge>
+                          ))}
+                        </Col>
+                        <Col>
+                          Total Addon:{" "}
+                          {formatCurrency(
+                            pd.addonData.reduce((acc, item) => {
+                              return (
+                                acc +
+                                item.prices.reduce((priceAcc, priceItem) => {
+                                  return priceAcc + priceItem.price;
+                                }, 0)
+                              );
+                            }, 0) * pd.qty,
+                            pd.price.currency,
+                            pd.price.currencySymbol,
+                            userLocale
+                          )}
+                        </Col>
+                      </>
                     )}
                   </Row>
                 </ListGroup.Item>
@@ -164,14 +192,28 @@ const StripeCheckoutForm = ({ cartItems, userInfo }) => {
                 <Row>
                   <Col>
                     <h6 className="fw-bold">
-                      Total: ${cartItems && cartItems.cartTotal}
+                      Total:{" "}
+                      {cartItems &&
+                        formatCurrency(
+                          cartItems.cartTotal,
+                          cartItems.currency.currency,
+                          cartItems.currency.currencySymbol,
+                          userLocale
+                        )}
                     </h6>
                   </Col>
                   <Col
                     style={{ padding: "8px 5px", backgroundColor: "#dff9fb" }}
                   >
                     <h6 className="fw-bold">
-                      Total Payable: ${cartItems && cartItems.cartTotal}
+                      Total Payable:{" "}
+                      {cartItems &&
+                        formatCurrency(
+                          cartItems.cartTotal,
+                          cartItems.currency.currency,
+                          cartItems.currency.currencySymbol,
+                          userLocale
+                        )}
                     </h6>
                   </Col>
                 </Row>
@@ -181,16 +223,28 @@ const StripeCheckoutForm = ({ cartItems, userInfo }) => {
                     style={{ backgroundColor: "#273c75", padding: "8px 5px" }}
                   >
                     <h6 className="fw-800 m-0 text-white">
-                      Price After Discount: $
-                      {cartItems && cartItems.totalAfterDiscount}
+                      Price After Discount:{" "}
+                      {cartItems &&
+                        formatCurrency(
+                          cartItems.totalAfterDiscount,
+                          cartItems.currency.currency,
+                          cartItems.currency.currencySymbol,
+                          userLocale
+                        )}
                     </h6>
                   </Col>
                   <Col
                     style={{ padding: "8px 5px", backgroundColor: "#dff9fb" }}
                   >
                     <h6 className="fw-bold m-0">
-                      Total Payable: $
-                      {cartItems && cartItems.totalAfterDiscount}
+                      Total Payable:{" "}
+                      {cartItems &&
+                        formatCurrency(
+                          cartItems.totalAfterDiscount,
+                          cartItems.currency.currency,
+                          cartItems.currency.currencySymbol,
+                          userLocale
+                        )}
                     </h6>
                   </Col>
                 </Row>

@@ -18,6 +18,7 @@ export const dbCart = asyncHandler(async (req, res) => {
     products: cartItems,
     currency,
     cartTotal: totalPrice,
+    totalAfterDiscount: totalPrice,
     orderdBy: user._id,
   }).save();
   res.json(newCart);

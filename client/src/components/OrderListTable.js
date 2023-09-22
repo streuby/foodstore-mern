@@ -1,8 +1,9 @@
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React from 'react'
-import { Button, Table } from 'react-bootstrap'
-import { LinkContainer } from 'react-router-bootstrap'
+import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
+import { Button, Table } from "react-bootstrap";
+import { LinkContainer } from "react-router-bootstrap";
+import { formatCurrency, userLocale } from "../utils";
 
 const OrderListTable = ({ orderList }) => {
   return (
@@ -11,8 +12,8 @@ const OrderListTable = ({ orderList }) => {
       bordered
       hover
       responsive
-      className='table-sm'
-      variant='dark'
+      className="table-sm"
+      variant="dark"
     >
       <thead>
         <tr>
@@ -33,38 +34,43 @@ const OrderListTable = ({ orderList }) => {
               <td>{order._id}</td>
               <td>{new Date(order.createdAt).toLocaleDateString()}</td>
               <td>
-                $
-                {order.couponApplied
-                  ? order.totalAfterDiscount
-                  : order.cartTotal}
+                {order.currency &&
+                  formatCurrency(
+                    order.couponApplied
+                      ? order.totalAfterDiscount
+                      : order.cartTotal,
+                    order.currency.currency,
+                    order.currency.currencySymbol,
+                    userLocale
+                  )}
               </td>
               <td>
                 {order.paymentIntent &&
-                order.paymentIntent.status === 'succeeded' ? (
+                order.paymentIntent.status === "succeeded" ? (
                   <>
-                    <FontAwesomeIcon icon={faCheck} color='green' />{' '}
+                    <FontAwesomeIcon icon={faCheck} color="green" />{" "}
                     {new Date(order.createdAt).toLocaleDateString()}
                   </>
                 ) : (
-                  <FontAwesomeIcon icon={faTimes} color='red' />
+                  <FontAwesomeIcon icon={faTimes} color="red" />
                 )}
               </td>
               <td>
-                {order.orderStatus && order.orderStatus === 'Not Processed' ? (
-                  <Button variant='dark'>Not Processed</Button>
-                ) : order.orderStatus === 'Processing' ? (
-                  <Button variant='info'>Processing</Button>
-                ) : order.orderStatus === 'Dispatched' ? (
-                  <Button variant='warning'>Dispatched</Button>
-                ) : order.orderStatus === 'Completed' ? (
-                  <Button variant='success'>Completed</Button>
+                {order.orderStatus && order.orderStatus === "Not Processed" ? (
+                  <Button variant="dark">Not Processed</Button>
+                ) : order.orderStatus === "Processing" ? (
+                  <Button variant="info">Processing</Button>
+                ) : order.orderStatus === "Dispatched" ? (
+                  <Button variant="warning">Dispatched</Button>
+                ) : order.orderStatus === "Completed" ? (
+                  <Button variant="success">Completed</Button>
                 ) : (
-                  <Button variant='danger'>Cancelled</Button>
+                  <Button variant="danger">Cancelled</Button>
                 )}
               </td>
               <td>
                 <LinkContainer to={`/order/${order._id}`}>
-                  <Button className='btn-sm' variant='secondary'>
+                  <Button className="btn-sm" variant="secondary">
                     Details
                   </Button>
                 </LinkContainer>
@@ -73,7 +79,7 @@ const OrderListTable = ({ orderList }) => {
           ))}
       </tbody>
     </Table>
-  )
-}
+  );
+};
 
-export default OrderListTable
+export default OrderListTable;

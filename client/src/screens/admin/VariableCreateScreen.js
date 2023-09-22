@@ -16,6 +16,7 @@ import {
 import ItemSearch from "../../components/ItemSearch";
 import { MultiSelect } from "react-multi-select-component";
 import { useNavigate } from "react-router-dom";
+import { formatCurrency, userLocale } from "../../utils";
 
 const VariableCreateScreen = () => {
   const [label, setLabel] = useState("");
@@ -160,6 +161,22 @@ const VariableCreateScreen = () => {
                       {variable.attribute.map((a) => (
                         <span key={a._id}>
                           {a.name}
+                          {" ["}
+                          {a.prices.map(
+                            ({ price, currency, currencySymbol }) => (
+                              <span
+                                style={{ color: "#b38f00", fontWeight: "600" }}
+                              >
+                                {formatCurrency(
+                                  price,
+                                  currency,
+                                  currencySymbol,
+                                  userLocale
+                                )}{" "}
+                              </span>
+                            )
+                          )}
+                          {"] "}
                           <br />
                         </span>
                       ))}

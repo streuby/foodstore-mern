@@ -10,7 +10,7 @@ export const orderCreate = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email: req.user.email }).exec();
 
   if (user) {
-    const { products, cartTotal, totalAfterDiscount, couponApplied } =
+    const { products, cartTotal, totalAfterDiscount, currency, couponApplied } =
       await Cart.findOne({ orderdBy: user._id }).exec();
 
     const newOrder = await new Order({
@@ -20,6 +20,7 @@ export const orderCreate = asyncHandler(async (req, res) => {
       couponApplied,
       paymentIntent,
       paymentMethod,
+      currency,
       orderdBy: user._id,
     }).save();
 
