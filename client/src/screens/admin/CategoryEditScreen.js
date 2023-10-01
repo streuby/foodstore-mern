@@ -70,7 +70,6 @@ const CategoryEditScreen = () => {
   };
 
   const uploadFileHandler = (e) => {
-    console.log("Fired file upload >>>>");
     const file = e.target.files[0];
     if (file) {
       Resizer.imageFileResizer(

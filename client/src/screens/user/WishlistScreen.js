@@ -41,12 +41,12 @@ const WishlistScreen = () => {
     <Message variant="danger">{error}</Message>
   ) : wishlistData && !wishlistData.length ? (
     <>
-      <Meta title="Food Store | Wishlist" />
+      <Meta title="Foody | Wishlist" />
       <Message variant="info">Wishlist empty</Message>
     </>
   ) : (
     <Row>
-      <Meta title="Food Store | Wishlist" />
+      <Meta title="Foody | Wishlist" />
       <h3>WishList: </h3>
       <Col>
         <Table

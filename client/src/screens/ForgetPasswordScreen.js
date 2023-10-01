@@ -38,7 +38,7 @@ const ForgetPasswordScreen = () => {
   };
   return (
     <FormContainer>
-      <Meta title="Food Store | Forgot Password" />
+      <Meta title="Foody | Forgot Password" />
       <h1>Forgot Password</h1>
       {message && <Message variant="primary">{message}</Message>}
       <Form onSubmit={submitHandler}>

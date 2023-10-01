@@ -24,7 +24,6 @@ const ImageDiv = styled.div`
 `;
 
 const Slide = ({ imageUrl, bgImage, alt, name, setCatSlug, slug }) => {
-  console.log(bgImage);
   return (
     <BgDiv backgroundImage={bgImage}>
       <ImageDiv>

@@ -20,6 +20,7 @@ import userRoutes from "./routes/userRoutes.js";
 import variableRoutes from "./routes/variableRoutes.js";
 import currencyRoutes from "./routes/currencyRoutes.js";
 import paystackRoutes from "./routes/paystackRoutes.js";
+import flutterwaveRoutes from "./routes/flutterwaveRoutes.js";
 
 config();
 const app = express();
@@ -38,6 +39,7 @@ const routes = [
   variableRoutes,
   currencyRoutes,
   paystackRoutes,
+  flutterwaveRoutes,
 ];
 
 connectDB();

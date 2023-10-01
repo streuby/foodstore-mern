@@ -11,6 +11,7 @@ import { CART_LIST_RESET } from "../../constants/cartConstants";
 import { userDbCartDelete } from "../../actions/cartActions";
 import { useAlert } from "react-alert";
 import { formatCurrency, userLocale } from "../../utils";
+import { updatePaymentStatus } from "../../actions/orderActions";
 
 const FlutterwaveCheckoutForm = ({
   cartItems,
@@ -18,6 +19,7 @@ const FlutterwaveCheckoutForm = ({
   error,
   intentSuccess,
   intent,
+  orderId,
 }) => {
   const alert = useAlert();
   const [config, setConfig] = useState({});
@@ -59,19 +61,19 @@ const FlutterwaveCheckoutForm = ({
       alert.success("Order Placed ");
     }
     // eslint-disable-next-line
-  }, [success, history]);
+  }, [success]);
 
   useEffect(() => {
     let ignore = false;
     // Paystack
-    if (cartItems && !ignore) {
+    if (!ignore) {
       setConfig({
         public_key: publicKey,
-        tx_ref: cartItems._id,
-        amount: intent.amount * 0.01,
-        currency: intent.currency,
+        tx_ref: cartItems?._id,
+        amount: intent.amount,
+        currency: intent.currency?.currency,
         payment_options:
-          intent.currency === "USD"
+          intent.currency?.currency === "USD"
             ? "card"
             : "card,mobilemoney,ussd,banktransfer",
         customer: {
@@ -108,16 +110,33 @@ const FlutterwaveCheckoutForm = ({
   // you can call this function anything
   const handleFutterwaveSuccessAction = (reference) => {
     // Implementation for whatever you want to do with reference and after success call.
-    console.log(reference);
-    if (reference.status === "success") {
+
+    if (
+      reference.status === "completed" &&
+      reference.charge_response_message === "Approved Successful" &&
+      reference.charge_response_code === "00" &&
+      !orderId
+    ) {
       setpaid(true);
       dispatch(
         createOrder(
-          { id: reference.trxref, amount: intent.amount, status: "succeeded" },
+          {
+            id: reference.flw_ref,
+            amount: intent.amount,
+            status: "succeeded",
+          },
           "Paystack",
           intent.currency
         )
       );
+    } else if (
+      reference.status === "completed" &&
+      reference.charge_response_message === "Approved Successful" &&
+      reference.charge_response_code === "00" &&
+      orderId
+    ) {
+      setpaid(true);
+      dispatch(updatePaymentStatus(orderId, "succeeded"));
     }
 
     setProcessing(false);
@@ -126,7 +145,6 @@ const FlutterwaveCheckoutForm = ({
   // you can call this function anything
   const handleFlotterwaveCloseAction = () => {
     // implementation for  whatever you want to do when the Paystack dialog closed.
-    console.log("closed");
   };
 
   const cartStyle = {
@@ -159,7 +177,7 @@ const FlutterwaveCheckoutForm = ({
             <Message variant="danger">{errorCreateOrder}</Message>
           )}
           <ListGroup>
-            {cartItems &&
+            {cartItems.length > 0 &&
               cartItems.products.map((pd, index) => (
                 <ListGroup.Item key={pd._id}>
                   <Row className="d-flex flex-column">
@@ -245,6 +263,7 @@ const FlutterwaveCheckoutForm = ({
                     <h6 className="fw-bold">
                       Total:{" "}
                       {cartItems &&
+                        cartItems.currency &&
                         formatCurrency(
                           cartItems.cartTotal,
                           cartItems.currency.currency,
@@ -259,6 +278,7 @@ const FlutterwaveCheckoutForm = ({
                     <h6 className="fw-bold">
                       Total Payable:{" "}
                       {cartItems &&
+                        cartItems.currency &&
                         formatCurrency(
                           cartItems.cartTotal,
                           cartItems.currency.currency,
@@ -276,6 +296,7 @@ const FlutterwaveCheckoutForm = ({
                     <h6 className="fw-800 m-0 text-white">
                       Price After Discount:{" "}
                       {cartItems &&
+                        cartItems.currency &&
                         formatCurrency(
                           cartItems.totalAfterDiscount,
                           cartItems.currency.currency,
@@ -290,6 +311,7 @@ const FlutterwaveCheckoutForm = ({
                     <h6 className="fw-bold m-0">
                       Total Payable:{" "}
                       {cartItems &&
+                        cartItems.currency &&
                         formatCurrency(
                           cartItems.totalAfterDiscount,
                           cartItems.currency.currency,
@@ -330,7 +352,6 @@ const FlutterwaveCheckoutForm = ({
               ) : (
                 <button
                   onClick={() => {
-                    console.log("Config", config);
                     handleFlutterPayment({
                       callback: (paymentResult) => {
                         try {
@@ -360,7 +381,9 @@ const FlutterwaveCheckoutForm = ({
           )}
           <p className={paid ? "result-message" : "result-message hidden"}>
             Payment Successful.{" "}
-            <Link to="/user/history">See it in your purchase history.</Link>
+            <Link to="/user/orderhistory">
+              See it in your purchase history.
+            </Link>
           </p>
         </form>
       )}

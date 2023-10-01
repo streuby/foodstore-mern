@@ -82,7 +82,6 @@ const FoodModal = ({
 
   const handleAddToCart = () => {
     dispatch(addToCart(product.slug, price, counter, variable, addon));
-    //console.log({ slug: product.slug, price, qry: counter, variable, addon });
     setModalShow(false);
   };
 
@@ -288,7 +287,12 @@ const FoodModal = ({
                           <MultiSelect
                             options={product.addon
                               .map((a) => ({
-                                label: `${a.name}-${a.prices[0].currencySymbol}${a.prices[0].price}`,
+                                label: `${a.name}-${formatCurrency(
+                                  a.prices[0].price,
+                                  a.prices[0].currency,
+                                  a.prices[0].currencySymbol,
+                                  userLocale
+                                )}`,
                                 value: a._id,
                                 prices: a.prices,
                                 name: a.name,

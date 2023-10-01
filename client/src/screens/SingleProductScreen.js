@@ -58,10 +58,6 @@ const SingleProductScreen = () => {
   const wish = useSelector((state) => state.wish);
   const { loadingAdd, successAdd } = wish;
 
-  const cart = useSelector((state) => state.cart);
-  const { cartItems, currency, error } = cart;
-  const { currency: cartCurrncy, currencySymbol } = currency;
-
   useEffect(() => {
     dispatch(detailsProduct(productSlug));
   }, [dispatch, productSlug]);
@@ -111,7 +107,6 @@ const SingleProductScreen = () => {
 
   const handleAddToCart = () => {
     dispatch(addToCart(product.slug, price, counter, variable, addon));
-    //console.log({ slug: product.slug, price, qry: counter, variable, addon });
     navigate("/cart");
   };
   return (
@@ -200,18 +195,11 @@ const SingleProductScreen = () => {
                 <ListGroup.Item style={{ backgroundColor: "transparent" }}>
                   {product.variable && <h4>Choose from bellow: </h4>}
                   {product.prices && product.prices.length > 0 ? (
-                    <Tabs
-                      defaultActiveKey="profile"
-                      id="uncontrolled-tab-example"
-                      className="mb-3"
-                    >
+                    <Tabs defaultActiveKey="NGN" id="tab" className="mb-3">
                       {product.prices.map(
                         ({ price, currencySymbol, currency, _id }) => (
                           <Tab eventKey={currencySymbol} title={currency}>
-                            <Form.Check
-                              type="checkbox"
-                              id={`check-api-checkbox`}
-                            >
+                            <Form.Check type="checkbox" id={`${_id}`}>
                               <Form.Check.Input
                                 type="checkbox"
                                 value={currencySymbol}
@@ -316,7 +304,7 @@ const SingleProductScreen = () => {
                           .map((a) => ({
                             label: `${a.name}-${formatCurrency(
                               a.prices[0].price,
-                              currency,
+                              a.prices[0].currency,
                               a.prices[0].currencySymbol,
                               userLocale
                             )}`,
@@ -337,25 +325,23 @@ const SingleProductScreen = () => {
                 {price.price > 0 && (
                   <ListGroup.Item style={{ backgroundColor: "transparent" }}>
                     <p>
-                      <h4>
-                        You will be billed{" "}
-                        {formatCurrency(
-                          price.price * counter +
-                            addon.reduce((total, item) => {
-                              const currencyPrices = item.prices.filter(
-                                (_price) => _price.currency === price.currency
-                              );
-                              const sum = currencyPrices.reduce(
-                                (acc, __price) => acc + __price.price,
-                                0
-                              );
-                              return (total + sum) * counter;
-                            }, 0),
-                          price.currency,
-                          price.currencySymbol,
-                          userLocale
-                        )}
-                      </h4>
+                      You will be billed{" "}
+                      {formatCurrency(
+                        price.price * counter +
+                          addon.reduce((total, item) => {
+                            const currencyPrices = item.prices.filter(
+                              (_price) => _price.currency === price.currency
+                            );
+                            const sum = currencyPrices.reduce(
+                              (acc, __price) => acc + __price.price,
+                              0
+                            );
+                            return (total + sum) * counter;
+                          }, 0),
+                        price.currency,
+                        price.currencySymbol,
+                        userLocale
+                      )}
                     </p>
                   </ListGroup.Item>
                 )}

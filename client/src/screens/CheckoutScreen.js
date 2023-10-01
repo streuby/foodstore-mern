@@ -115,8 +115,8 @@ const CheckoutScreen = () => {
     const payload = {
       amount:
         cartItems?.couponApplied === true
-          ? Number(cartItems.totalAfterDiscount * 100)
-          : Number(cartItems?.cartTotal * 100),
+          ? Number(cartItems.totalAfterDiscount)
+          : Number(cartItems?.cartTotal),
       status: "pending",
     };
 
@@ -125,7 +125,7 @@ const CheckoutScreen = () => {
 
   return (
     <>
-      <Meta title="Food Store | Checkout" />
+      <Meta title="Foody | Checkout" />
       <Row>
         {cartItems ? (
           <>
@@ -245,30 +245,38 @@ const CheckoutScreen = () => {
                 )}
                 <ListGroup.Item>
                   <h6>Payment Method:</h6>
-                  <Form.Check
-                    type="radio"
-                    label="Stripe Payment"
-                    id="Stripe"
-                    name="paymentMethod"
-                    value="Stripe"
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                  ></Form.Check>
-                  <Form.Check
-                    type="radio"
-                    label="Paystrack Payment"
-                    id="Paystack"
-                    name="paymentMethod"
-                    value="Paystack"
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                  ></Form.Check>
-                  <Form.Check
-                    type="radio"
-                    label="Flutterwave Payment"
-                    id="Flutterwave"
-                    name="paymentMethod"
-                    value="Flutterwave"
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                  ></Form.Check>
+                  {cartItems?.currency?.currency === "USD" && (
+                    <Form.Check
+                      type="radio"
+                      label="Stripe Payment"
+                      id="Stripe"
+                      name="paymentMethod"
+                      value="Stripe"
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    ></Form.Check>
+                  )}
+                  {cartItems?.currency?.currency === "NGN" && (
+                    <Form.Check
+                      type="radio"
+                      label="Paystack Payment"
+                      id="Paystack"
+                      name="paymentMethod"
+                      value="Paystack"
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    ></Form.Check>
+                    // eslint-disable-next-line react/jsx-no-comment-textnodes
+                  )}
+                  {cartItems?.currency?.currency === "USD" ||
+                    (cartItems?.currency?.currency === "NGN" && (
+                      <Form.Check
+                        type="radio"
+                        label="Flutterwave Payment"
+                        id="Flutterwave"
+                        name="paymentMethod"
+                        value="Flutterwave"
+                        onChange={(e) => setPaymentMethod(e.target.value)}
+                      ></Form.Check>
+                    ))}
                   <Form.Check
                     type="radio"
                     label="Cash On Delivery"

@@ -11,6 +11,7 @@ import { CART_LIST_RESET } from "../../constants/cartConstants";
 import { userDbCartDelete } from "../../actions/cartActions";
 import { useAlert } from "react-alert";
 import { formatCurrency, userLocale } from "../../utils";
+import { updatePaymentStatus } from "../../actions/orderActions";
 
 const PaystackCheckoutForm = ({
   cartItems,
@@ -18,6 +19,7 @@ const PaystackCheckoutForm = ({
   error,
   intentSuccess,
   intent,
+  orderId,
 }) => {
   const alert = useAlert();
   const [succeeded, setSucceeded] = useState(false);
@@ -69,39 +71,16 @@ const PaystackCheckoutForm = ({
     publicKey: publicKey,
   };
 
-  //   const handleSubmit = async (e) => {
-  //     e.preventDefault();
-  //     setProcessing(true);
-
-  //     console.log("Fired Paystack handleSubmit  >>>>");
-
-  //     console.log("payload: ", payload);
-
-  //     if (payload.error) {
-  //       setError(`Payment failed ${payload.error.message}`);
-  //       console.log(payload);
-  //       setProcessing(false);
-  //     } else {
-  //       if (payload.paymentIntent.status === "succeeded") {
-  //         dispatch(createOrder(payload.paymentIntent, "Stripe"));
-  //         setError(null);
-  //         setProcessing(false);
-  //         setSucceeded(true);
-  //       }
-  //     }
-  //   };
-
-  //   const handleChange = async (e) => {
-  //     setDisabled(e.empty);
-  //     setError(e.error ? e.error.message : "");
-  //   };
-
   // you can call this function anything
   const handlePaystackSuccessAction = (reference) => {
     // Implementation for whatever you want to do with reference and after success call.
-    console.log(reference);
-    if (reference.status === "success") {
+    if (orderId && reference.status === "success") {
       setpaid(true);
+      setSucceeded(true);
+      dispatch(updatePaymentStatus(orderId, "succeeded"));
+    } else if (reference.status === "success" && !orderId) {
+      setpaid(true);
+      setSucceeded(true);
       dispatch(
         createOrder(
           { id: reference.trxref, amount: intent.amount, status: "succeeded" },
@@ -117,7 +96,7 @@ const PaystackCheckoutForm = ({
   // you can call this function anything
   const handlePaystackCloseAction = () => {
     // implementation for  whatever you want to do when the Paystack dialog closed.
-    console.log("closed");
+    //console.log("closed");
   };
 
   const componentProps = {
@@ -154,7 +133,7 @@ const PaystackCheckoutForm = ({
             <Message variant="danger">{errorCreateOrder}</Message>
           )}
           <ListGroup>
-            {cartItems &&
+            {cartItems?.length > 0 &&
               cartItems.products.map((pd, index) => (
                 <ListGroup.Item key={pd._id}>
                   <Row className="d-flex flex-column">
@@ -240,6 +219,7 @@ const PaystackCheckoutForm = ({
                     <h6 className="fw-bold">
                       Total:{" "}
                       {cartItems &&
+                        cartItems.currency &&
                         formatCurrency(
                           cartItems.cartTotal,
                           cartItems.currency.currency,
@@ -254,6 +234,7 @@ const PaystackCheckoutForm = ({
                     <h6 className="fw-bold">
                       Total Payable:{" "}
                       {cartItems &&
+                        cartItems.currency &&
                         formatCurrency(
                           cartItems.cartTotal,
                           cartItems.currency.currency,
@@ -271,6 +252,7 @@ const PaystackCheckoutForm = ({
                     <h6 className="fw-800 m-0 text-white">
                       Price After Discount:{" "}
                       {cartItems &&
+                        cartItems.currency &&
                         formatCurrency(
                           cartItems.totalAfterDiscount,
                           cartItems.currency.currency,
@@ -285,6 +267,7 @@ const PaystackCheckoutForm = ({
                     <h6 className="fw-bold m-0">
                       Total Payable:{" "}
                       {cartItems &&
+                        cartItems.currency &&
                         formatCurrency(
                           cartItems.totalAfterDiscount,
                           cartItems.currency.currency,
@@ -335,7 +318,9 @@ const PaystackCheckoutForm = ({
           )}
           <p className={paid ? "result-message" : "result-message hidden"}>
             Payment Successful.{" "}
-            <Link to="/user/history">See it in your purchase history.</Link>
+            <Link to="/user/orderhistory">
+              See it in your purchase history.
+            </Link>
           </p>
         </form>
       )}

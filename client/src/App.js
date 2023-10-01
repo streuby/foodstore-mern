@@ -57,6 +57,7 @@ const CheckoutScreen = lazy(() => import("./screens/CheckoutScreen"));
 const CouponScreen = lazy(() => import("./screens/admin/CouponScreen"));
 const PlaceOrderScreen = lazy(() => import("./screens/PlaceOrderScreen"));
 const OrderDetailsScreen = lazy(() => import("./screens/OrderDetailsScreen"));
+const PayOrderScreen = lazy(() => import("./screens/PayOrderScreen"));
 const OrderHistoryScreen = lazy(() =>
   import("./screens/user/OrderHistoryScreen")
 );
@@ -235,10 +236,15 @@ function App() {
                 <Route path="/cart" element={<CartScreen />} />
                 <Route path="/checkout" element={<CheckoutScreen />} />
                 <Route
+                  path="/placeorder/:gateway/:orderId"
+                  element={<PlaceOrderScreen />}
+                />
+                <Route
                   path="/placeorder/:gateway"
                   element={<PlaceOrderScreen />}
                 />
                 <Route path="/order/:id" element={<OrderDetailsScreen />} />
+                <Route path="/order/pay/:id" element={<PayOrderScreen />} />
                 <Route path="/admin/user/:id" element={<UserDetailsScreen />} />
               </Routes>
             </Container>

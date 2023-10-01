@@ -31,10 +31,6 @@ const CartScreen = () => {
   const cartSaveDb = useSelector((state) => state.cartSaveDb);
   const { success } = cartSaveDb;
 
-  // useEffect(() => {
-  //   console.log(cartItems);
-  // }, [cartItems]);
-
   useEffect(() => {
     if (cartItems) {
       const total_price = cartItems.reduce((accumulator, item) => {
@@ -85,7 +81,7 @@ const CartScreen = () => {
   };
   return (
     <>
-      <Meta title="Food Store | Cart" />
+      <Meta title="Foody | Cart" />
       <Row>
         <Col md={9}>
           {error && <Message variant={"info"}>{error}</Message>}
@@ -252,8 +248,21 @@ const CartScreen = () => {
                 Items
               </ListGroup.Item>
               <ListGroup.Item>
+                Total Product (
+                {currency &&
+                  currency.currency &&
+                  formatCurrency(
+                    totalPrice - totalAddon,
+                    currency.currency,
+                    currency.currencySymbol,
+                    userLocale
+                  )}
+                )
+              </ListGroup.Item>
+              <ListGroup.Item>
                 Total Addon Price (
                 {currency &&
+                  currency.currency &&
                   formatCurrency(
                     totalAddon,
                     currency.currency,

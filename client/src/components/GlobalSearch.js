@@ -1,37 +1,39 @@
-import React, { useEffect } from 'react'
-import { Form, FormControl, ListGroup } from 'react-bootstrap'
+import React, { useEffect } from "react";
+import { Form, FormControl, ListGroup } from "react-bootstrap";
 
-import { useDispatch } from 'react-redux'
-import { LinkContainer } from 'react-router-bootstrap'
-import { listProduct } from '../actions/productActions'
-import { LIST_PRODUCT_RESET } from '../constants/productConstants'
+import { useDispatch } from "react-redux";
+import { LinkContainer } from "react-router-bootstrap";
+import { listProduct } from "../actions/productActions";
+import { LIST_PRODUCT_RESET } from "../constants/productConstants";
+
 const GlobalSearch = ({ products, setSearchValue, searchValue }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (searchValue) {
-      dispatch(listProduct(searchValue))
+      dispatch({ type: LIST_PRODUCT_RESET });
+      dispatch(listProduct(searchValue));
     } else {
-      dispatch({ type: LIST_PRODUCT_RESET })
+      dispatch({ type: LIST_PRODUCT_RESET });
     }
-  }, [dispatch, searchValue])
+  }, [dispatch, searchValue]);
   return (
     <>
-      <Form style={{ position: 'relative' }}>
+      <Form style={{ position: "relative" }}>
         <FormControl
-          type='search'
-          placeholder='Search (ex: chicken)'
-          className='mr-2'
+          type="search"
+          placeholder="Search (eg: shoe)"
+          className="mr-2"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
         {products?.length > 0 && searchValue && (
-          <div style={{ position: 'absolute', top: '40px', zIndex: '99' }}>
+          <div style={{ position: "absolute", top: "40px", zIndex: "99" }}>
             <ListGroup>
               {products?.map((pd) => (
                 <LinkContainer
                   to={`/product/${pd.slug}`}
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: "pointer" }}
                   onClick={() => dispatch({ type: LIST_PRODUCT_RESET })}
                 >
                   <ListGroup.Item key={pd._id}>{pd.title}</ListGroup.Item>
@@ -42,7 +44,7 @@ const GlobalSearch = ({ products, setSearchValue, searchValue }) => {
         )}
       </Form>
     </>
-  )
-}
+  );
+};
 
-export default GlobalSearch
+export default GlobalSearch;

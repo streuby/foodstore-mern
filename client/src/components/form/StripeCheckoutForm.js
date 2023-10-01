@@ -11,8 +11,9 @@ import { CART_LIST_RESET } from "../../constants/cartConstants";
 import { userDbCartDelete } from "../../actions/cartActions";
 import { useAlert } from "react-alert";
 import { formatCurrency, userLocale } from "../../utils";
+import { updatePaymentStatus } from "../../actions/orderActions";
 
-const StripeCheckoutForm = ({ cartItems, userInfo }) => {
+const StripeCheckoutForm = ({ cartItems, userInfo, orderId }) => {
   const alert = useAlert();
   const [succeeded, setSucceeded] = useState(false);
   const [error, setError] = useState(null);
@@ -40,14 +41,15 @@ const StripeCheckoutForm = ({ cartItems, userInfo }) => {
     e.preventDefault();
     setProcessing(true);
 
-    console.log("Fired handleSubmit >>>>");
-
     const config = {
       headers: {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
-    const { data } = await axios.post(`/api/create-payment-intent`, {}, config);
+    const { data } =
+      typeof orderId === "undefined"
+        ? await axios.post(`/api/create-payment-intent`, {}, config)
+        : await axios.post(`/api/create-payment-intent/${orderId}`, {}, config);
 
     const payload = await stripe.confirmCardPayment(data.clientSecret, {
       payment_method: {
@@ -59,21 +61,21 @@ const StripeCheckoutForm = ({ cartItems, userInfo }) => {
       },
     });
 
-    console.log("payload: ", payload);
-
     if (payload.error) {
       setError(`Payment failed ${payload.error.message}`);
-      console.log(payload);
       setProcessing(false);
-    } else {
-      if (payload.paymentIntent.status === "succeeded") {
-        dispatch(
-          createOrder(payload.paymentIntent, "Stripe", cartItems.currency)
-        );
-        setError(null);
-        setProcessing(false);
-        setSucceeded(true);
-      }
+    } else if (orderId && payload.paymentIntent.status === "succeeded") {
+      setError(null);
+      setProcessing(false);
+      setSucceeded(true);
+      dispatch(updatePaymentStatus(orderId, "succeeded"));
+    } else if (payload.paymentIntent.status === "succeeded" && !orderId) {
+      dispatch(
+        createOrder(payload.paymentIntent, "Stripe", cartItems.currency)
+      );
+      setError(null);
+      setProcessing(false);
+      setSucceeded(true);
     }
   };
 
@@ -108,8 +110,8 @@ const StripeCheckoutForm = ({ cartItems, userInfo }) => {
             <Message variant="danger">{errorCreateOrder}</Message>
           )}
           <ListGroup>
-            {cartItems &&
-              cartItems.products.map((pd, index) => (
+            {cartItems?.length > 0 &&
+              cartItems.products?.map((pd, index) => (
                 <ListGroup.Item key={pd._id}>
                   <Row className="d-flex flex-column">
                     <Col>
@@ -194,6 +196,7 @@ const StripeCheckoutForm = ({ cartItems, userInfo }) => {
                     <h6 className="fw-bold">
                       Total:{" "}
                       {cartItems &&
+                        cartItems.currency &&
                         formatCurrency(
                           cartItems.cartTotal,
                           cartItems.currency.currency,
@@ -208,6 +211,7 @@ const StripeCheckoutForm = ({ cartItems, userInfo }) => {
                     <h6 className="fw-bold">
                       Total Payable:{" "}
                       {cartItems &&
+                        cartItems.currency &&
                         formatCurrency(
                           cartItems.cartTotal,
                           cartItems.currency.currency,
@@ -225,6 +229,7 @@ const StripeCheckoutForm = ({ cartItems, userInfo }) => {
                     <h6 className="fw-800 m-0 text-white">
                       Price After Discount:{" "}
                       {cartItems &&
+                        cartItems.currency &&
                         formatCurrency(
                           cartItems.totalAfterDiscount,
                           cartItems.currency.currency,
@@ -239,6 +244,7 @@ const StripeCheckoutForm = ({ cartItems, userInfo }) => {
                     <h6 className="fw-bold m-0">
                       Total Payable:{" "}
                       {cartItems &&
+                        cartItems.currency &&
                         formatCurrency(
                           cartItems.totalAfterDiscount,
                           cartItems.currency.currency,
@@ -284,7 +290,9 @@ const StripeCheckoutForm = ({ cartItems, userInfo }) => {
           )}
           <p className={succeeded ? "result-message" : "result-message hidden"}>
             Payment Successful.{" "}
-            <Link to="/user/history">See it in your purchase history.</Link>
+            <Link to="/user/orderhistory">
+              See it in your purchase history.
+            </Link>
           </p>
         </form>
       )}

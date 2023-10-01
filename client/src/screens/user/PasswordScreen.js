@@ -37,7 +37,7 @@ const Password = () => {
   };
   return (
     <FormContainer>
-      <Meta title="Food Store | Reset Password" />
+      <Meta title="Foody | Reset Password" />
       <h1>Enter New Password</h1>
       {successMessage && <Message variant="success">{successMessage}</Message>}
       {errorMessage && <Message variant="danger">{errorMessage}</Message>}

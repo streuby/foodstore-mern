@@ -68,10 +68,6 @@ const AddonScreen = () => {
     dispatch(listCurrency());
   }, [dispatch, userInfo, success, successDelete, navigate]);
 
-  useEffect(() => {
-    console.log(prices);
-  }, [prices]);
-
   const updatePrices = (key, symbol, value) => {
     setPrices({ [key]: parseInt(value) });
   };

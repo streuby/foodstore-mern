@@ -26,7 +26,7 @@ const ProductByCategory = ({ catSlug, userInfo, loadingAdd }) => {
         <>
           <Row>
             <Col>
-              <h4>Category: {categoryName && categoryName.name}</h4>
+              <h4>{categoryName && categoryName.name}</h4>
             </Col>
           </Row>
           <Row>

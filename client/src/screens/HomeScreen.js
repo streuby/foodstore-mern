@@ -1,8 +1,7 @@
-import React, { lazy, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ProductByCategory from "../components/ProductByCategory";
 import ThreeDCarousel from "../components/slider/threeD/ThreeDCarousel";
-import { styled } from "styled-components";
 import { useAlert } from "react-alert";
 import { ADD_TO_WISHLIST_RESET } from "../constants/userConstants";
 import Meta from "../components/Meta";

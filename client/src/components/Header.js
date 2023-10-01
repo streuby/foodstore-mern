@@ -2,11 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Container, Navbar, Nav, NavDropdown } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCartPlus,
-  faCreditCard,
-  faSignInAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCreditCard, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
+import { PiShoppingCartDuotone } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import { logOut } from "../actions/userActions";
 import GlobalSearch from "./GlobalSearch";
@@ -46,7 +43,7 @@ const Header = () => {
       <Navbar bg="dark" expand="lg" variant="dark" fixed="top" collapseOnSelect>
         <Container>
           <LinkContainer to="/">
-            <Navbar.Brand>Food Store</Navbar.Brand>
+            <Navbar.Brand>Foody</Navbar.Brand>
           </LinkContainer>
 
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -59,7 +56,7 @@ const Header = () => {
               />
               <LinkContainer to="/cart">
                 <Nav.Link className="cart">
-                  <FontAwesomeIcon icon={faCartPlus} color="#fff" /> Cart
+                  <PiShoppingCartDuotone color="#fff" size="1.3em" /> Cart
                   {cartItems.length > 0 && (
                     <span
                       style={{

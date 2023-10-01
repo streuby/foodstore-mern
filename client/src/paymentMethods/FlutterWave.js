@@ -70,7 +70,18 @@ const FlutterWave = ({ order, orderId }) => {
     }
 
     return () => (ignore = true);
-  }, [order, email, amount, name, phone, dispatch, orderId, flutterwavePublicKey, currency, logo]);
+  }, [
+    order,
+    email,
+    amount,
+    name,
+    phone,
+    dispatch,
+    orderId,
+    flutterwavePublicKey,
+    currency,
+    logo,
+  ]);
 
   const handleFlutterPayment = useFlutterwave(config);
   return (
@@ -78,7 +89,6 @@ const FlutterWave = ({ order, orderId }) => {
       <Button type="button" variant="outline-dark">
         <button
           onClick={() => {
-            console.log("Config", config);
             handleFlutterPayment({
               callback: (paymentResult) => {
                 try {

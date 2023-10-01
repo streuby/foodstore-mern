@@ -30,7 +30,7 @@ const OrderHistoryScreen = () => {
 
   return (
     <>
-      <Meta title="Food Store | Order History" />
+      <Meta title="Foody | Order History" />
       <Row>
         <Col md={2}>
           <ShippingForm />
