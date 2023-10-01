@@ -56,6 +56,8 @@ routes.map((r) => app.use("/api", r));
 
 // console.log("testing __dirname: ", path.join(__dirname, "/server/routes"));
 
+console.log("Checking .env: ", process.env.NODE_ENV);
+
 // Deployment configuration
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "client/build")));
