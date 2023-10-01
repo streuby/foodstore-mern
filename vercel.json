@@ -15,5 +15,13 @@
         "source": "/(.*)",
         "destination": "/server/server.js"
       }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "/",
+        "source": "/(.*)",
+        "script": "npm run dev"
+      }
     ]
   }
