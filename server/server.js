@@ -56,6 +56,20 @@ routes.map((r) => app.use("/api", r));
 
 // console.log("testing __dirname: ", path.join(__dirname, "/server/routes"));
 
+// Deployment configuration
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "client/build")));
+
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"))
+  );
+} else {
+  // Only required at development environment
+  app.get("/", (req, res) => {
+    res.send("API is running...");
+  });
+}
+
 // console.log("testing obj: ", obj);
 
 app.use(notFound);
