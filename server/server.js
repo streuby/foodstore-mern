@@ -70,6 +70,8 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
+// console.log
+
 // console.log("testing obj: ", obj);
 
 app.use(notFound);
